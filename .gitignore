@@ -1,1 +1,6 @@
  
+/*.dat
+/.vs/NodejsApp1/v14/*.suo
+/*.njsproj
+.bin
+/node_modules
