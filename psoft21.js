@@ -8,6 +8,8 @@
     
  * */
 
+var nofapp = 'PSOFT21_EURO';        //identifier for application
+var port = 8080;                    //port that server will run on
 var express = require('express');
 var app = express();
 var morgan = require('morgan');
@@ -19,15 +21,11 @@ var dbconfig = require('./dbconfig.js');        //load config module
 
 //load API modules
 var utils = require("./api/PS2Utils.js");
-//var users = require("./api/userModule.js")
-
-//define port that server will run on
-var port = 8080;
 
 /*==========================DB definitions================================*/
 
 var sqlConn = new Sequelize(
-    dbconfig.database,    //prod DB
+    dbconfig.database,      //DB
     dbconfig.user,          //user
     dbconfig.password,      //pass
     {
@@ -50,8 +48,7 @@ var Match = sqlConn.import(__dirname + "/models/matchModel");
 
 sqlConn.sync();
 
-utils.logMe("Loaded Sequelize modules...");
-
+utils.logMe("*** Sequelize models loaded");
 
 app.use(express.static(__dirname));
 app.use(favicon(__dirname + '/assets/img/favicon.ico'));
@@ -60,14 +57,37 @@ app.use(bodyParser.json());                 		//this lets Express handle POST da
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname));
 
-
 /*=====================================Routing and APIs=====================================*/
 
+var router = express.Router();
+
+var userModule = require("./api/userModule.js");
+//var gameModule = require("./api/gameModule.js");
+
+//middleware to use for all requests...
+router.use(function (req, res, next) {
+    //utils.logMe("Middleware layer entered...") ;
+    next();             //move on...
+});
+
 //default route
-app.get("/", function (req, res) {
+router.get("/", function (req, res) {
+    //res.json({message: nofapp +' v2.1 API'});
     res.redirect('/app/index.html');
 });
 
+router.post("/login",function (req, res) {
+    userModule.logIn(req,res,Users);
+});
+
+router.post("/adduser",function(req,res){
+    userModule.addUser(req,res,Users);
+});
+
+//use routing for all actions
+app.use("/api",router);
+
+/*
 //return the next match(es) information
 app.get("/api/nextmatch", function (req, res) {
     var resObj = {
@@ -314,129 +334,14 @@ app.get("/api/getScore", function (req, res) {
     })
 });
 
-//try to login and get user info API
-app.post("/api/login", function (req, res) {
-    
-    var resObj = {
-        usrData: {},
-        message: "",
-        success: false
-    };
-    
-    if (req.body.email == "" || req.body.password == "") {
-        resObj.message = "Invalid email/password";
-        resObj.success = false;
-    }
-    Users.find({
-        where: {
-            email: req.body.email,
-            password: req.body.password
-        }
-    })
-  .then(function (usrObj) {
-        
-        if (usrObj == null) {
-            throw "User not found. Please check username/password and try again";
-        }
-        
-        //populate user data
-        resObj.success = true;
-        resObj.usrData = {
-            userID: usrObj.userID,
-            email: usrObj.email,
-            user: usrObj.name,
-            token: usrObj.auth_key,
-            points: usrObj.points
-        };
-        
-        res.json(resObj);
-        res.end();
-        return;
-    })
-  .catch(function (err) {
-        //user find failed
-        utils.logMe("Error trying to fetch user with email " + req.body.email + ". Details: " + err);
-        resObj.success = false;
-        resObj.message = err;
-        
-        res.json(resObj);
-        res.end();
-        return;
-    });
-});
-
-//add new user API
-app.post("/api/adduser", function (req, res) {
-    
-    //uncomment the following after registration period expires
-    utils.logMe("Registration period has expired. Unable to register account for " + req.body.email);
-    res.json({ success: false, message: "Registration period has ended. New accounts will not be added!" });
-    return;
-    /////////////////////////////////////////    
-    
-    //Password hashing has been taken care of on the client side
-    if (req.body.name == "" || req.body.email == "" || req.body.password == "") {
-        utils.logMe("Blank values trying to add user(email given: " + req.body.email + "). Not registering!");
-        return;
-    }
-    
-    var resObj = {
-        message: "",
-        success: false
-    };
-    
-    
-    //check if email ID already exists
-    Users.find({
-        where: {
-            email: req.body.email,
-        }
-    }).then(function (usrObj) {
-        if (usrObj == null) {
-            //email has not been taken; add this user
-            var user = Users.build({
-                name: req.body.name,
-                email: req.body.email,
-                password: req.body.password,
-                auth_key: req.body.token,
-                points: 0
-            });
-            
-            user.save()
-            .then(function () {
-                resObj.success = true;
-                res.json(resObj);
-                return;
-            })
-            .catch(function (err) {
-                utils.logMe("Error adding user {" + req.body.name + "/" + req.body.email + "/" + "}. Details: \n" + err + ")");
-                resObj.success = false;
-                resObj.message = err;
-                res.json(resObj);
-                return;
-            });
-        }
-        else {
-            throw "That email address has already been registered.";
-        }
-    })
-    .catch(function (err) {
-        utils.logMe("[" + req.body.email + "]" + err);
-        resObj.success = false;
-        resObj.message = err;
-        res.json(resObj);
-        return;
-    });
-});
-
 //create/update prediction for user
 app.post("/api/submitPrediction", function (req, res) {
-    
+
     var resObj = {
         message: "",
         success: false
     };
-    
+
     //utils.logMe("predObj::" + JSON.stringify(req.body.predObj));
     var rows = req.body.predObj.length;
     var userID = 0;
@@ -444,22 +349,22 @@ app.post("/api/submitPrediction", function (req, res) {
     var match_id = 0;
     var team_id2 = 0;
     var match_id2 = 0;
-    
+
     sqlConn.query(
         "SELECT userID from users WHERE auth_key = '" + req.body.token + "'",
     { type: sqlConn.QueryTypes.SELECT })
     .then(function (user_row) {
-        
+
         userID = user_row[0].userID;
         team_id = req.body.predObj[0].teamID;
         match_id = req.body.predObj[0].matchID;
-        
+
         return Match.find({ where: { matchID: match_id, isLocked: 0 } })
             .then(function (active_rows) {
-            
-            //check if this match has been locked                
+
+            //check if this match has been locked
             if (active_rows == null) {
-                
+
                 utils.logMe("UserID " + userID + " has tried predicting " + match_id + " after lockdown period. This has been logged!");
                 throw "Sorry, the game has been locked! Prediction is not allowed at this time.";
             }
@@ -470,7 +375,7 @@ app.post("/api/submitPrediction", function (req, res) {
                 if (!created) {
                     //utils.logMe("TEAMID INSIDE findOrCreate is: " + team_id);
                     //utils.logMe("EXISTING prediction object:" + JSON.stringify(prediction));
-                    
+
                     //prediction exists; update it
                     sqlConn.query(
                         "UPDATE prediction SET predictedTeamID=" + team_id + " WHERE playerID=" + userID + " AND matchID=" + match_id,
@@ -505,22 +410,22 @@ app.post("/api/submitPrediction", function (req, res) {
             //update second game if exists
             team_id2 = req.body.predObj[1].teamID;
             match_id2 = req.body.predObj[1].matchID;
-            
+
             Match.find({ where: { matchID: match_id2, isLocked: 0 } })
             .then(function (active_rows) {
-                //check if this match has been locked                
+                //check if this match has been locked
                 if (active_rows == null) {
                     utils.logMe("UserID " + userID + " has tried predicting matchID " + match_id2 + " after lockdown period. This has been logged!");
                     throw "Sorry, the game has been locked! Prediction is not allowed at this time.";
                 }
-                //not locked, so prediction change is allowed            
+                //not locked, so prediction change is allowed
                 return Prediction
                     .findOrCreate({ where: { playerID: userID, matchID: match_id2 }, defaults: { predictedTeamID: team_id2 } })
                     .spread(function (prediction2, created) {
                     if (!created) {
                         //utils.logMe("TEAMID INSIDE findOrCreate is: " + team_id2);
                         //utils.logMe("EXISTING prediction object:" + JSON.stringify(prediction2));
-                        
+
                         //prediction exists; update it
                         sqlConn.query(
                             "UPDATE prediction SET predictedTeamID=" + team_id2 + " WHERE playerID=" + userID + " AND matchID=" + match_id2,
@@ -555,7 +460,7 @@ app.post("/api/submitPrediction", function (req, res) {
         return resObj;
     })
 });
-
+*/
 
 /*=====================================Admin functions===============================*/
 
@@ -601,4 +506,4 @@ app.get("/api/adminUpdateScores", function (req, res) {
 
 app.listen(port);
 
-utils.logMe("PredictSoft v2.00 started on port " + port);
+utils.logMe(nofapp + " started on port " + port);

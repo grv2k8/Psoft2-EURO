@@ -4,3 +4,6 @@
 /*.njsproj
 .bin
 /node_modules
+/obj/Debug
+/.idea
+/bin
