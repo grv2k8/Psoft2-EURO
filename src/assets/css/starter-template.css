@@ -1,0 +1,39 @@
+body {
+	padding-top: 50px;
+}
+
+.starter-template {
+	padding: 40px 15px;
+	text-align: center;
+}
+
+.blocks .btn-primary
+{
+	padding: 12px 50px;
+	border-radius: 1; 
+}
+.blocks {border-spacing: 5px;}
+
+.navbar-custom {
+    background-color:#1a398a;
+    color:#edfaf9;
+    border-radius:0;
+}
+
+.navbar-brand {
+    color:#edfaf9 !important;       /* color of logo text*/
+}
+
+.navbar-default {
+  background-color:#1f1f8a;
+  background-image: none;
+  background-repeat: no-repeat;
+ }
+
+body { background-color:#1a398a  !important; }
+
+.myGrid {
+/*    width: 350px;
+    height: 340px;
+*/ 
+}
