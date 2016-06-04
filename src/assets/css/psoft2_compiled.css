@@ -15,22 +15,22 @@ body {
 .blocks {border-spacing: 5px;}
 
 .navbar-custom {
-    background-color:#1a398a;
-    color:#edfaf9;
+    background-color:#394245;
+    color:#000000;
     border-radius:0;
 }
 
 .navbar-brand {
-    color:#edfaf9 !important;       /* color of logo text*/
+    color:#000000 !important;       /* color of logo text*/
 }
 
 .navbar-default {
-  background-color:#1f1f8a;
+  background-color:#FFFFFF;
   background-image: none;
   background-repeat: no-repeat;
  }
 
-body { background-color:#1a398a  !important; }
+body { background-color:#728085  !important; }
 
 .myGrid {
 /*    width: 350px;

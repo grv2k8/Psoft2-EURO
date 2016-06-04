@@ -73,7 +73,7 @@ router.use(function (req, res, next) {
 //default route
 router.get("/", function (req, res) {
     //res.json({message: nofapp +' v2.1 API'});
-    res.redirect('/app/index.html');
+    res.redirect('/src/index.html');
 });
 
 router.post("/login",function (req, res) {

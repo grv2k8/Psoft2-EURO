@@ -1,69 +1,85 @@
 (function () {
     angular.module("psoft2UI").controller("loginController", loginCtrl);
-    userCtrl.$inject = ['$scope', '$location', 'userService', '$window', 'md5'];
-    function loginCtrl($scope, $location, userService, $window, md5) {
+    loginCtrl.$inject = ['$scope', '$location', 'authService', 'userService', 'md5'];
+    function loginCtrl($scope, $location, authService, userService, md5) {
 
-        $scope.user = {};	//initially empty
         $scope.is_valid = true;
-        
         $scope.message = "";
         $scope.is_waiting = false;			//enabled when waiting on server
         
-        if (!userService.checkLogin()) {
-            if (!userService.checkSession()) {
-                //no session saved either, so redirect to login
-                //console.log("User not logged in!!");
-                $location.path("/login");
+        //console.log("AUTH_INIT: checking auth object::" + angular.toJson(authService.usrObj));
+        if (!authService.isLoggedIn()) {
+            if (authService.loadSession()) {
+                //fetch and update score if different from session storage
+                userService.getScore(authService.usrObj.token)
+                    .then(function (response) {
+                        if (response != null) {
+                            if (authService.usrObj.points != response.data.score) {
+                                //update score and storage object
+                                authService.usrObj.points = response.data.score;
+                                authService.saveSession();      //update score in saved session
+                            }
+                        }
+                    });
+                //user info loaded; redirect to main page
+                $location.path("/poll");
             }
             else {
-                //fetch and update score if different from session storage
-                userService.getScore(userService.usrObj.token)
-                .then(function (response) {
-                    if (response != null) {
-                        if (userService.usrObj.points != response.data.score) {
-                            //update score and storage object                            
-                            userService.usrObj.points = response.data.score;
-                            window.localStorage['nofapp_session'] = angular.toJson(userService.usrObj);
-                        }
-                    }
-                });
-            }
+                //no session saved either, so wait on login
+                console.log("First time run - waiting on login...");
+             }
         }
-        else {
-            $scope.user.userID = userService.usrObj.userID;
-            $scope.user.name = userService.usrObj.name;
-            $scope.user.email = userService.usrObj.email;
-            $scope.user.token = userService.usrObj.token;
-            $scope.user.points = userService.usrObj.points;
-            
-            //also load user game history
-            if ($scope.gameHistory.length == 0) { getUserPredictionHistory(); }
-        }
+/*        else {
+            // $scope.user.userID = authService.usrObj.userID;
+            // $scope.user.name = authService.usrObj.name;
+            // $scope.user.email = authService.usrObj.email;
+            // $scope.user.token = authService.usrObj.token;
+            // $scope.user.points = authService.usrObj.points;
+            $scope.user = authService.usrObj.slice();
+            console.log("DOES THIS EVER GET HERE???");
+            $location.path("/poll");
+        }*/
         
         $scope.logout = function () {
             //invalidate user session
             console.log("Erasing user session...");
-            $scope.user = {};
-            userService.usrObj = {};
+            authService.usrObj = {};
             window.localStorage.clear();
             $location.path("/login");
         };
-        
 
         $scope.checkIfLoggedIn = function () {
-            return userService.checkLogin();
+
+            //TODO: try to figure out why this factory function won't work
+            return authService.isLoggedIn();
+
+            //possible solution for checking the user login status, if factory function fails
+            // if(authService.usrObj.token == '')
+            //     return false;
+            // else
+            //     return true;
         };
-        
+
+        $scope.getUserName = function() {
+            if(authService.usrObj.token != '')
+                return authService.usrObj.name;
+        };
+
+        $scope.getUserPoints = function() {
+            if(authService.usrObj.token != '')
+                return authService.usrObj.points;
+        }
+
         $scope.login = function () {
             
             //check if already logged in
-            if (userService.checkLogin()) {
+            if (authService.isLoggedIn()) {
                 //console.log("Already logged in as "+userService.usrObj.name);
                 $location.path("/poll");
                 return;
             }
             $scope.is_waiting = true;
-            userService.login($scope.email, md5.createHash($scope.password))
+            authService.login($scope.email, md5.createHash($scope.password))
 			.then(function (response) {
                 //console.log("RESPONSE RETURNED:: "+angular.toJson(response,true));
                 if (response == null) {
@@ -74,32 +90,27 @@
                     throw response.data.message;
                 }
                 
-                userService.usrObj = {
+                /*authService.usrObj = {
                     userID: response.data.usrData.userID,
                     name: response.data.usrData.user,
                     email: response.data.usrData.email,
                     token: response.data.usrData.token,
                     points: response.data.usrData.points
-                };
-                
-                $scope.user = {
-                    userID: response.data.usrData.userID,
-                    name: response.data.usrData.user,
-                    email: response.data.usrData.email,
-                    token: response.data.usrData.token,
-                    points: response.data.usrData.points
-                }
-                
+                };*/
+                authService.usrObj = angular.copy(response.data.usrData);
+                //$scope.user = angular.copy(response.data.usrData);
+
                 if ($scope.savelogin) {
                     //session persistence
                     //console.log("This is where the login needs to be saved!");
-                    window.localStorage['nofapp_session'] = angular.toJson(userService.usrObj);
-                    //$localStorage.$default({ nofapp_token: response.data.usrData.token });          //save user token to local storage
+                    //window.localStorage['nofapp_session'] = angular.toJson(userService.usrObj);
+                    authService.saveSession();
                     //console.log("Saved user token to local storage");
                 }
                 
                 $scope.is_valid = true;
                 //console.log("Set user object to: " + angular.toJson(userService.usrObj, true));
+                console.log("Login successful, routing to poll page..");
                 $location.path("/poll");
                 return;
             })

@@ -3,7 +3,7 @@ angular.module("psoft2UI",['ngRoute','angular-md5','ui.grid'])
 		$routeProvider
 			.when('/poll',{
 				controller: 			'gameController',
-				templateUrl: 			'/app/views/gamePollPartial.html',
+				templateUrl: 			'/src/app/components/poll/gamePollPartial.html',
 				caseInsensitiveMatch: 	true
 			})
 			//.when('/user',{
@@ -12,23 +12,28 @@ angular.module("psoft2UI",['ngRoute','angular-md5','ui.grid'])
 			//	caseInsensitiveMatch: 	true
 			//})
 			.when("/login",{
-				controller: 			'userController',
-				templateUrl: 			'/app/views/loginPartial.html',
+				controller: 			'loginController',
+				templateUrl: 			'/src/app/components/login/loginPartial.html',
 				caseInsensitiveMatch: 	true	
 			})
-			.when('/',{
-				controller: 			'gameController',
-				templateUrl: 			'/app/views/gamePollPartial.html',
+			.when('/',{		//start with authentication service
+				controller: 			'loginController',
+				templateUrl: 			'/src/app/components/login/loginPartial.html',
 				caseInsensitiveMatch: 	true
 			})
+			// .when('/',{
+			// 	controller: 			'gameController',
+			// 	templateUrl: 			'/src/app/components/poll/gamePollPartial.html',
+			// 	caseInsensitiveMatch: 	true
+			// })
 			.when('/register',{
 				controller: 			'accountController',
-				templateUrl: 			'/app/views/registerPartial.html',
+				templateUrl: 			'/src/app/components/register/registerPartial.html',
 				caseInsensitiveMatch: 	true
 			})
 			.when('/profile',{
 				controller: 			'userController',
-				templateUrl: 			'/app/views/profilePartial.html',
+				templateUrl: 			'/src/app/components/profile/profilePartial.html',
 				caseInsensitiveMatch: 	true
 			})
 			.otherwise({

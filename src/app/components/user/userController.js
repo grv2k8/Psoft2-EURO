@@ -36,7 +36,7 @@
             })
         };
         
-        
+/*
         if (!userService.checkLogin()) {
             if (!userService.checkSession()) {
                 //no session saved either, so redirect to login
@@ -68,8 +68,9 @@
             
             //also load user game history
             if ($scope.gameHistory.length == 0) { getUserPredictionHistory(); }
-        }
+        }*/
         
+/*
         $scope.logout = function () {
             //invalidate user session
             console.log("Erasing user session...");
@@ -86,9 +87,10 @@
         $scope.getUserPoints = function () {
             return userService.usrObj.points;
         };
-        
+*/
+
         $scope.checkIfLoggedIn = function () {
-            return userService.checkLogin();
+            return authService.checkLogin();
             //return userService.usrObj.isLoggedIn;
         };
         

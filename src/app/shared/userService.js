@@ -13,44 +13,48 @@ angular.module("psoft2UI").service("userService", function ($http){
 		points: 0
 	};	
     
-    
-    this.checkSession = function () { 
-    //check local storage for login, and return true if found
-        if (window.localStorage['nofapp_session']) {
-            //console.log("User session is available as:" + angular.toJson(window.localStorage['nofapp_session']));
-            this.usrObj = angular.fromJson(window.localStorage['nofapp_session']);
-            //console.log("Loaded:: " + angular.toJson(this.usrObj, true));
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
+    //
+    // this.checkSession = function () {
+    // //check local storage for login, and return true if found
+    //     if (window.localStorage['nofapp_session']) {
+    //         //console.log("User session is available as:" + angular.toJson(window.localStorage['nofapp_session']));
+    //         this.usrObj = angular.fromJson(window.localStorage['nofapp_session']);
+    //         //console.log("Loaded:: " + angular.toJson(this.usrObj, true));
+    //         return true;
+    //     }
+    //     else {
+    //         return false;
+    //     }
+    // };
 
-	this.checkLogin=function(){
-        
-        if (this.usrObj.token == '')			//use token to check if user is logged in
-            return false;
-        else
-            return true;
-    }
-    
+
     this.getScore = function (token) {
-        
+
         var promise = $http.get("/api/getScore/?token=" + token);
         return promise;
-    }
+    };
+
+    //
+    ////reassigned to authservice
+    //
+    // this.checkLogin=function(){
+    //
+    //     if (this.usrObj.token == '')			//use token to check if user is logged in
+    //         return false;
+    //     else
+    //         return true;
+    // }
+
     
-    
-    this.login = function (email, password) {
-        var data = {
-            email: email,
-            password: password
-        };
-        
-        var promise = $http.post("/api/login", data);
-        return promise;
-    }
+    // this.login = function (email, password) {
+    //     var data = {
+    //         email: email,
+    //         password: password
+    //     };
+    //
+    //     var promise = $http.post("/api/login", data);
+    //     return promise;
+    // }
     
     this.addUser = function (name, email, password, token) {
         var data = {

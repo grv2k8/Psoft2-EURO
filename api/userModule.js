@@ -31,9 +31,9 @@ exports.logIn = function (req,res,userModel) {
             //populate user data
             resObj.success = true;
             resObj.usrData = {
-                userID: usrObj.userID,
+                //userID: usrObj.userID,            //not sending this due to security concerns (token should suffice)
                 email: usrObj.email,
-                user: usrObj.name,
+                name: usrObj.name,
                 token: usrObj.auth_key,
                 points: usrObj.points
             };
