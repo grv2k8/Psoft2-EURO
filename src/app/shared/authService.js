@@ -13,13 +13,6 @@ angular.module("psoft2UI").factory('authService', function ($http){
         points: 0
     };
 
-    usrObj.isLoggedIn = function(){
-        if(usrObj.token === '')
-            return false;
-        else
-            return true;
-    };
-
     usrObj.login = function(email, passwordHash){
         var data = {
             email: email,
@@ -32,7 +25,7 @@ angular.module("psoft2UI").factory('authService', function ($http){
     usrObj.saveSession = function (){
         //save current user object in session storage
         window.localStorage[session_name] = angular.toJson(this.usrObj);
-    }
+    };
 
     usrObj.loadSession = function () {
         //check local storage for login, and return true if found
@@ -45,6 +38,34 @@ angular.module("psoft2UI").factory('authService', function ($http){
     };
 
 
+    usrObj.isLoggedIn = function(){
+        if(!this.usrObj){
+            return false;
+        }
+        else{
+            return true;
+        }
+    };
+
+    usrObj.getName = function(){
+        if(this.usrObj)
+            return this.usrObj.name;
+    };
+
+    usrObj.getPoints = function(){
+        if(this.usrObj)
+            return this.usrObj.points;
+    };
+
+    usrObj.clearAuth = function(){
+        this.usrObj = {
+            userID: '',
+            email: '',
+            name: '',
+            token: '',
+            points: 0
+        };
+    };
 
     return usrObj;
 

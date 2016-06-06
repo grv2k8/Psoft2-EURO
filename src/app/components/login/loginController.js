@@ -26,7 +26,7 @@
             }
             else {
                 //no session saved either, so wait on login
-                console.log("First time run - waiting on login...");
+                //console.log("First time run - waiting on login...");
              }
         }
 /*        else {
@@ -39,35 +39,35 @@
             console.log("DOES THIS EVER GET HERE???");
             $location.path("/poll");
         }*/
-        
-        $scope.logout = function () {
-            //invalidate user session
-            console.log("Erasing user session...");
-            authService.usrObj = {};
-            window.localStorage.clear();
-            $location.path("/login");
-        };
 
         $scope.checkIfLoggedIn = function () {
 
             //TODO: try to figure out why this factory function won't work
+            //console.log("factory.isLoggedIn = "+authService.isLoggedIn());
             return authService.isLoggedIn();
 
             //possible solution for checking the user login status, if factory function fails
-            // if(authService.usrObj.token == '')
-            //     return false;
-            // else
-            //     return true;
+            /* if(authService.usrObj.token == '')
+                 return false;
+             else{
+                 //console.log("## " + authService.usrObj.token);
+                 return true;
+             }*/
         };
 
         $scope.getUserName = function() {
-            if(authService.usrObj.token != '')
-                return authService.usrObj.name;
+            // if(authService)
+            //     return authService.usrObj.name;
+            // else
+            //     return '404';
+            return authService.getName();
         };
 
         $scope.getUserPoints = function() {
-            if(authService.usrObj.token != '')
-                return authService.usrObj.points;
+            // if(!authService)
+            //     return '';
+            //     return authService.usrObj.points;
+            return authService.getPoints();
         }
 
         $scope.login = function () {
@@ -110,7 +110,7 @@
                 
                 $scope.is_valid = true;
                 //console.log("Set user object to: " + angular.toJson(userService.usrObj, true));
-                console.log("Login successful, routing to poll page..");
+                //console.log("Login successful, routing to poll page..");
                 $location.path("/poll");
                 return;
             })
@@ -126,7 +126,17 @@
                 $scope.is_waiting = false;
             })
         };
-        
+
+        $scope.logout = function () {
+            //invalidate user session
+            console.log("Erasing user session...");
+            //authService.usrObj = {};
+            window.localStorage.clear();
+            authService.clearAuth();
+            $location.path("/login");
+        };
+
+
         $scope.redirectToRegister = function () {
             //console.log("Redirecting to Register page");
             $location.path("/register");

@@ -31,7 +31,7 @@
 </head>
 <body ng-app="psoft2UI">
     <!--Navbar-->
-    <div ng-include='"/src/app/shared/pageHeaderPartial.html"'>
+    <div ng-include='"/src/app/shared/pageHeaderPartial.html"' ng-controller="loginController">
     </div>
     <!--main body-->
     <section ng-view></section>
