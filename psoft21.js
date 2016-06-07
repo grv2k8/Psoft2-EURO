@@ -62,7 +62,7 @@ app.use(express.static(__dirname));
 var router = express.Router();
 
 var userModule = require("./api/userModule.js");
-//var gameModule = require("./api/gameModule.js");
+var gameModule = require("./api/gameModule.js");
 
 //middleware to use for all requests...
 router.use(function (req, res, next) {
@@ -91,9 +91,13 @@ router.post("/adduser",function(req,res){
     userModule.addUser(req,res,Users);
 });
 
+//get scores for leaderboard
+app.get("/api/getScores", function (req, res) {
+    gameModule.getScoreBoard(req,res,Users);
+});
+
 //use routing for all actions
 app.use("/api",router);
-
 
 //return the next match(es) information
 app.get("/api/nextmatch", function (req, res) {
@@ -142,8 +146,9 @@ app.get("/api/nextmatch", function (req, res) {
         res.json(resObj);
         res.end();
     })
-})
- /*
+});
+
+/*
 //list predictions for upcoming match from submitted players
 app.get("/api/getPredictions", function (req, res) {
     var resObj = {

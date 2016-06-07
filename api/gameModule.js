@@ -50,3 +50,36 @@ exports.getNextMatch = function (req,res,sqlConx) {
         });
 };
 
+exports.getScoreBoard = function(req,res,userModel) {
+    var resObj = {
+        scoreData: [],
+        message: "",
+        success: false
+    };
+
+    userModel.findAll({
+            attributes: ['name', 'points'],
+            order: 'points DESC'
+        })
+        .then(function (scores) {
+            resObj.success = true;
+
+            for (var n = 0; n < scores.length; n++) {
+                //console.log(JSON.stringify(scores));
+                resObj.scoreData.push({
+                    Name: scores[n].name,
+                    Points: scores[n].points
+                });
+            }
+
+            res.json(resObj);
+            res.end();
+        })
+        .catch(function (err) {
+            utils.logMe("Error trying to fetch score data. Details:\n" + err);
+            //get player prediction for upcoming match
+            resObj.success = false;
+            resObj.message = err;
+            res.json(resObj);
+        })
+};

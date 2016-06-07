@@ -24,11 +24,6 @@ Controller that handles
         $scope.lockDown = false;
         
         //	$scope.isPointsTableLoaded = false;
-        $scope.scoreGrid = {
-            minRowsToShow: 12,
-            columnDefs: [{ field: 'Name', displayName: 'Name' },
-                { field: 'Points', displayName: 'Score', width: 100 }]
-        };
         
         $scope.predictionGrid = {
             columnDefs: [{ field: 'Name', displayName: 'Name' },
@@ -49,29 +44,6 @@ Controller that handles
             }
         }
         
-        var getLeaderBoard = function () {
-            
-            //get Points from API
-            gameService.getUserPoints()
-			.then(function (response) {
-                if (response == null) {
-                    throw "There was an error trying to connect to the web service. Please try again later";
-                }
-                if (!response.data.success) { throw response.data.message; }
-                if (response.data.scoreData.length == 0) {
-                    $scope.scoreGrid = { data: '' };
-                }
-                else {
-                    //console.log(angular.toJson(response.data.scoreData,true));
-                    $scope.scoreGrid.data = response.data.scoreData;
-                }
-            })
-			.catch(function (err) {
-                console.log("Unable to fetch score table. Details:\n" + err)
-            })
-        }
-
-
         var getPredictionTable = function () {
             
             //quick hack for semi and finals:
@@ -108,12 +80,11 @@ Controller that handles
             }
         }
         else {
-            //getLeaderBoard();			//load score table
+            //getLeaderBoard();			//load score table - moved to scoreboardController.js
             //getPredictionTable();		//load prediction table
             
             
             //get list of active games
-
            gameService.getNextGame()
 				.then(function (response) {
                 
