@@ -27,8 +27,8 @@ angular.module("psoft2UI").service("gameService", function ($http) {
         return promise;
     }
     
-    this.getUserPoints = function () {
-        var promise = $http.get("/api/getScores");
+    this.getLeaderboardScores = function () {
+        var promise = $http.get("/api/getLeaderboardScores");
         return promise;
     }
     

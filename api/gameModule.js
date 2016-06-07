@@ -5,8 +5,43 @@ var exports = module.exports;
 
 //API function implementation
 
+//get current scoreboard
+exports.getScoreBoard = function(req,res,userModel) {
+    var resObj = {
+        scoreData: [],
+        message: "",
+        success: false
+    };
+
+    userModel.findAll({
+        attributes: ['name', 'points'],
+        order: 'points DESC'
+    })
+        .then(function (scores) {
+            resObj.success = true;
+
+            for (var n = 0; n < scores.length; n++) {
+                //console.log(JSON.stringify(scores));
+                resObj.scoreData.push({
+                    Name: scores[n].name,
+                    Points: scores[n].points
+                });
+            }
+
+            res.json(resObj);
+            res.end();
+        })
+        .catch(function (err) {
+            utils.logMe("Error trying to fetch score data. Details:\n" + err);
+            //get player prediction for upcoming match
+            resObj.success = false;
+            resObj.message = err;
+            res.json(resObj);
+        })
+};
+
 //return the next active match information
-exports.getNextMatch = function (req,res,sqlConx) {
+exports.getNextMatchDONOTCALLYET = function (req,res,sqlConx) {
 
     var resObj = {
         count: 0,
@@ -50,36 +85,53 @@ exports.getNextMatch = function (req,res,sqlConx) {
         });
 };
 
-exports.getScoreBoard = function(req,res,userModel) {
+exports.getPredictionListDONOTCALLYET = function(req,res,userModel,predictionModel,sqlConn){
     var resObj = {
-        scoreData: [],
+        predictData: [],
         message: "",
         success: false
     };
 
-    userModel.findAll({
-            attributes: ['name', 'points'],
-            order: 'points DESC'
-        })
-        .then(function (scores) {
-            resObj.success = true;
+    var query = "";
+    var tokenID = req.query.token;
 
-            for (var n = 0; n < scores.length; n++) {
-                //console.log(JSON.stringify(scores));
-                resObj.scoreData.push({
-                    Name: scores[n].name,
-                    Points: scores[n].points
-                });
+    //check if match is locked, in which case only return current user's prediction
+    Match.find({ where: { isActive: 1 } })
+        .then(function (active_rows) {
+            if (active_rows == null) {
+                return;
+            }
+            if (active_rows.isHidden == 1) {
+                //show only current user's prediction
+                query = "SELECT u.name as name, (SELECT Name FROM teams WHERE teamID = p.predictedTeamID) As PredictedTeam FROM prediction p, users u WHERE p.playerID = u.userID AND u.userID = (SELECT userID from users where auth_key = '" + tokenID + "') AND p.matchID IN ( SELECT matchID FROM `match` WHERE isActive =1)";
+            }
+            else {
+                //show everyone's predictions
+                query = "SELECT u.name as name, (SELECT Name FROM teams WHERE teamID = p.predictedTeamID) As PredictedTeam FROM prediction p, users u WHERE p.playerID = u.userID AND p.matchID IN ( SELECT matchID FROM `match` WHERE isActive =1 AND isHidden=0)";
             }
 
-            res.json(resObj);
-            res.end();
+            sqlConn.query(query, { type: sqlConn.QueryTypes.SELECT })
+                .then(function (predictions) {
+                    for (var n = 0; n < predictions.length; n++) {
+
+                        resObj.predictData.push({
+                            Name: predictions[n].name,
+                            Team: predictions[n].PredictedTeam
+                        })
+                    }
+                    //utils.logMe(JSON.stringify(resObj));
+                    resObj.success = true;
+                    res.json(resObj);
+                    res.end();
+                    return;
+                })
+                .catch(function (err) {
+                    utils.logMe("Error trying to fill in prediction data. Details:\n" + err);
+                    resObj.success = false;
+                    resObj.message = err;
+                    res.json(resObj);
+                    res.end();
+                    return;
+                })
         })
-        .catch(function (err) {
-            utils.logMe("Error trying to fetch score data. Details:\n" + err);
-            //get player prediction for upcoming match
-            resObj.success = false;
-            resObj.message = err;
-            res.json(resObj);
-        })
-};
+}

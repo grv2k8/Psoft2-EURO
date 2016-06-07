@@ -7,7 +7,5 @@ module.exports = function(sequelize, DataTypes) {
   avatar_image: DataTypes.STRING,
   auth_key:     DataTypes.STRING,
   points:       DataTypes.INTEGER
-},{
-  timestamps: false
 });
 }

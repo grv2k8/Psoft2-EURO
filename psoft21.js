@@ -33,7 +33,8 @@ var sqlConn = new Sequelize(
         dialect: 'mysql',
         logging: false,
         define: {
-            freezeTableName: true          //so table names won't be assumed pluralized by the ORM
+            freezeTableName: true,          //so table names won't be assumed pluralized by the ORM
+            timestamps: false               //not using sequelize timestamps
         },
         pool: {
             max: 50,
@@ -91,13 +92,10 @@ router.post("/adduser",function(req,res){
     userModule.addUser(req,res,Users);
 });
 
-//get scores for leaderboard
-app.get("/api/getScores", function (req, res) {
+//get leaderboard scores, sorted by points
+app.get("/api/getLeaderboardScores", function (req, res) {
     gameModule.getScoreBoard(req,res,Users);
 });
-
-//use routing for all actions
-app.use("/api",router);
 
 //return the next match(es) information
 app.get("/api/nextmatch", function (req, res) {
@@ -148,7 +146,6 @@ app.get("/api/nextmatch", function (req, res) {
     })
 });
 
-/*
 //list predictions for upcoming match from submitted players
 app.get("/api/getPredictions", function (req, res) {
     var resObj = {
@@ -201,42 +198,9 @@ app.get("/api/getPredictions", function (req, res) {
     })
 });
 
-//get leaderboard scores, sorted by points
-app.get("/api/getScores", function (req, res) {
-    var resObj = {
-        scoreData: [],
-        message: "",
-        success: false
-    };
-    
-    sqlConn.query(
-        "SELECT u.name, u.points FROM users u ORDER BY points DESC",
-      { type: sqlConn.QueryTypes.SELECT })
-      .then(function (scores) {
-        
-        resObj.success = true;
-        
-        for (var n = 0; n < scores.length; n++) {
-            //console.log(JSON.stringify(scores));
-            resObj.scoreData.push({
-                Name: scores[n].name,
-                Points: scores[n].points
-            });
-        }
-        
-        res.json(resObj);
-        res.end();
-        return;
-    })
-      .catch(function (err) {
-        utils.logMe("Error trying to fill in score data. Details:\n" + err);
-        //get player prediction for upcoming match
-        resObj.success = false;
-        resObj.message = err;
-        res.json(resObj);
-        return;
-    })
-})
+
+//use routing for all actions
+app.use("/api",router);
 
 //check if user has already predicted
 app.get("/api/checkIfPredicted", function (req, res) {
@@ -320,8 +284,8 @@ app.get("/api/getHistory", function (req, res) {
     })
 })
 
-//get score for user
-app.get("/api/getScore", function (req, res) {
+//get points for user
+app.get("/api/getUserPoints", function (req, res) {
     var resObj = {
         score: 0,
         message: "",
@@ -472,7 +436,7 @@ app.post("/api/submitPrediction", function (req, res) {
         return resObj;
     })
 });
-*/
+
 
 /*=====================================Admin functions===============================*/
 

@@ -28,9 +28,9 @@ angular.module("psoft2UI").service("userService", function ($http){
     // };
 
 
-    this.getScore = function (token) {
+    this.getUserPoints = function (token) {
 
-        var promise = $http.get("/api/getScore/?token=" + token);
+        var promise = $http.get("/api/getUserPoints/?token=" + token);
         return promise;
     };
 

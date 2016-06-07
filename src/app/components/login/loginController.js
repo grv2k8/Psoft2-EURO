@@ -11,7 +11,7 @@
         if (!authService.isLoggedIn()) {
             if (authService.loadSession()) {
                 //fetch and update score if different from session storage
-                userService.getScore(authService.usrObj.token)
+                userService.getUserPoints(authService.usrObj.token)
                     .then(function (response) {
                         if (response != null) {
                             if (authService.usrObj.points != response.data.score) {

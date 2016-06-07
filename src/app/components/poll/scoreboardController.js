@@ -14,8 +14,8 @@ Controller that handles leaderboard view
                 { field: 'Points', displayName: 'Score', width: 100 }]
         };
 
-        //get Points from API
-        gameService.getUserPoints()
+        //get leaderboard for scores
+        gameService.getLeaderboardScores()
             .then(function (response) {
                 if (response == null) {
                     throw "There was an error trying to connect to the web service. Please try again later";

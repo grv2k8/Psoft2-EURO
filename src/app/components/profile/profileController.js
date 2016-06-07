@@ -45,7 +45,7 @@
             }
             else {
                 //fetch and update score if different from session storage
-                userService.getScore(userService.usrObj.token)
+                userService.getUserPoints(userService.usrObj.token)
                 .then(function (response) {
                     if (response != null) {
                         if (userService.usrObj.points != response.data.score) {

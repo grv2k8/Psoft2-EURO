@@ -56,7 +56,7 @@
                         <div>NOTE: Predictions from other players will be visible after prediction lockdown for semifinals and finals</div>
                     </div>
                     <div ng-hide="nogames">
-                        <div>
+                        <div ng-controller="predListController">
                             <h3>Prediction list</h3>
                             <div ui-grid="predictionGrid"></div>
                         </div>

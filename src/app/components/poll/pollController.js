@@ -21,14 +21,14 @@ Controller that handles
         $scope.submitResponseERR = "";
         $scope.showConfirmation = false;
         
-        $scope.lockDown = false;
+        // $scope.lockDown = false;
         
         //	$scope.isPointsTableLoaded = false;
         
-        $scope.predictionGrid = {
-            columnDefs: [{ field: 'Name', displayName: 'Name' },
-                { field: 'Team', displayName: 'Predicted Team' }]
-        };
+        // $scope.predictionGrid = {
+        //     columnDefs: [{ field: 'Name', displayName: 'Name' },
+        //         { field: 'Team', displayName: 'Predicted Team' }]
+        // };
         
         $scope.hasPredicted = true;
         
@@ -44,6 +44,7 @@ Controller that handles
             }
         }
         
+/*
         var getPredictionTable = function () {
             
             //quick hack for semi and finals:
@@ -70,6 +71,7 @@ Controller that handles
                 console.log("Unable to fetch prediction table. Details:\n" + err)
             })
         }
+*/
 
         if (!authService.isLoggedIn()) {
             //try loading user session from 
