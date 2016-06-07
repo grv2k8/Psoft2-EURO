@@ -6,7 +6,7 @@
 angular.module("psoft2UI").factory('authService', function ($http){
     var session_name = 'nofapp2_session';
     var usrObj = {
-        userID: '',
+        //userID: '',
         email: '',
         name: '',
         token: '',
@@ -55,6 +55,14 @@ angular.module("psoft2UI").factory('authService', function ($http){
     usrObj.getPoints = function(){
         if(this.usrObj)
             return this.usrObj.points;
+    };
+
+    usrObj.getToken = function () {
+        if(!this.usrObj){
+            return '';
+        }
+        else
+            return this.usrObj.token;
     };
 
     usrObj.clearAuth = function(){

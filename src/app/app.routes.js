@@ -2,7 +2,7 @@ angular.module("psoft2UI",['ngRoute','angular-md5','ui.grid'])
 	.config(function($routeProvider){
 		$routeProvider
 			.when('/poll',{
-				controller: 			'gameController',
+				controller: 			'pollController',
 				templateUrl: 			'/src/app/components/poll/gamePollPartial.html',
 				caseInsensitiveMatch: 	true
 			})

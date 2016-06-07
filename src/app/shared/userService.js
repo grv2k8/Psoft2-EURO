@@ -5,13 +5,13 @@ grjoshi 3/30/2016
 */
 
 angular.module("psoft2UI").service("userService", function ($http){
-	this.usrObj = {
-		userID: '',
-		email: '',
-		name: '',
-        token: '',
-		points: 0
-	};	
+	// this.usrObj = {
+	// 	userID: '',
+	// 	email: '',
+	// 	name: '',
+     //    token: '',
+	// 	points: 0
+	// };	
     
     //
     // this.checkSession = function () {

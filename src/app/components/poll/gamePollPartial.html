@@ -23,7 +23,8 @@
                                         <div class="panel-heading">
                                         </div>
                                         <div class="panel-body">
-                                            {{x.team1Name}}
+                                            <span><img src="{{x.team1LogoPath}}" alt="{{x.team1Name}}"  width="42" height="42" /> </span>
+                                            <span>{{x.team1Name}}</span>
                                             <span><input name={{x}} ng-value={{x.team1ID}} type="radio" ng-disabled="x.locked" ng-click="selectTeam(x.matchID,x.team1ID)"></span>
                                         </div>
                                     </div>
@@ -33,8 +34,11 @@
                                         <div class="panel-heading">
                                         </div>
                                         <div class="panel-body">
+                                            <div class="pull-right">
                                             <span><input name={{x}} value={{x.team2ID}} type="radio" ng-disabled="x.locked" ng-click="selectTeam(x.matchID, x.team2ID)"></span>
-                                            {{x.team2Name}}
+                                            <span>{{x.team2Name}}</span>
+                                            <span><img src="{{x.team2LogoPath}}" alt="{{x.team2Name}}"  width="42" height="42" /> </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

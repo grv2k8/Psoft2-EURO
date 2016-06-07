@@ -35,7 +35,6 @@
                 console.log("Unable to fetch user prediction history. Details:\n" + err)
             })
         };
-        
 /*
         if (!userService.checkLogin()) {
             if (!userService.checkSession()) {
@@ -94,7 +93,7 @@
             //return userService.usrObj.isLoggedIn;
         };
         
-        $scope.login = function () {
+        /*$scope.login = function () {
             
             //check if already logged in
             if (userService.checkLogin()) {
@@ -160,7 +159,7 @@
             //console.log("Redirecting to Register page");
             $location.path("/register");
             return;
-        };
+        };*/
 
         $scope.getDisplayPoints = function (resultStr)
         {

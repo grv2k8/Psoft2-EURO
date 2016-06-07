@@ -4,10 +4,10 @@ Controller that handles
 	- loading up poll page, with team names
 */
 (function () {
-    angular.module("psoft2UI").controller("gameController", pollCtrl);
-    pollCtrl.$inject = ['$scope', '$location', 'userService', 'gameService'];
+    angular.module("psoft2UI").controller("pollController", pollCtrl);
+    pollCtrl.$inject = ['$scope', '$location', 'userService', 'authService', 'gameService'];
     
-    function pollCtrl($scope, $location, userService, gameService) {
+    function pollCtrl($scope, $location, userService, authService, gameService) {
         
         $scope.games = [];
         $scope.selection = [];				//array of {usrID, matchID, teamID} objects			
@@ -16,7 +16,7 @@ Controller that handles
         
         $scope.loadingGames = true;         //flag to show "Loading games...." animation
         
-        $scope.user_token = userService.usrObj.token;
+        $scope.user_token = authService.getToken();
         
         $scope.submitResponseERR = "";
         $scope.showConfirmation = false;
@@ -70,7 +70,8 @@ Controller that handles
                 console.log("Unable to fetch score table. Details:\n" + err)
             })
         }
-        
+
+
         var getPredictionTable = function () {
             
             //quick hack for semi and finals:
@@ -97,23 +98,23 @@ Controller that handles
                 console.log("Unable to fetch prediction table. Details:\n" + err)
             })
         }
-        
-        if (!userService.checkLogin()) {
+
+        if (!authService.isLoggedIn()) {
             //try loading user session from 
-            if (!userService.checkSession()) {
+            if (!authService.loadSession()) {
                 //no session saved either, so redirect to login
-                //console.log("User not logged in!!");
+                console.log("User object not set. Redirecting to login...");
                 $location.path("/login");
             }
         }
         else {
-            getLeaderBoard();			//load score table
-            getPredictionTable();		//load prediction table
+            //getLeaderBoard();			//load score table
+            //getPredictionTable();		//load prediction table
             
             
             //get list of active games
-            
-            gameService.getNextGame()
+
+           gameService.getNextGame()
 				.then(function (response) {
                 
                 $scope.loadingGames = false;            //hide the "Loading...." animation
