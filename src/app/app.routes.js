@@ -32,7 +32,12 @@ angular.module("psoft2UI",['ngRoute','angular-md5','ui.grid'])
 				caseInsensitiveMatch: 	true
 			})
 			.when('/profile',{
-				controller: 			'userController',
+				controller: 			'profileController',
+				templateUrl: 			'/src/app/components/profile/profilePartial.html',
+				caseInsensitiveMatch: 	true
+			})
+			.when('/profile/:userid',{
+				controller:				'profileController',
 				templateUrl: 			'/src/app/components/profile/profilePartial.html',
 				caseInsensitiveMatch: 	true
 			})

@@ -1,6 +1,6 @@
 /*
-grjoshi 3/30/2016
-     Service to handle all user account related API calls (create/login)
+grjoshi 5/30/2016
+     Controller to handle register user page
 */
 
 (function () {

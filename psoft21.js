@@ -198,7 +198,6 @@ app.get("/api/getPredictions", function (req, res) {
     })
 });
 
-
 //use routing for all actions
 app.use("/api",router);
 
@@ -282,6 +281,59 @@ app.get("/api/getHistory", function (req, res) {
         res.end();
         return;
     })
+});
+
+//get game history of user with req.query.userID
+app.get("/api/getHistoryByID", function(req,res){
+    var resObj = {
+        count: 0,
+        userData: {},
+        historyData: [],
+        message: "",
+        success: false
+    };
+
+    var playerID = req.query.userID;
+
+    sqlConn.query(
+        "SELECT u.name as player_name, u.points as player_points, m.MatchDate AS match_date,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team1ID) AS team1,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team2ID) AS team2,(SELECT teams.Name FROM teams WHERE teams.teamID = p.predictedTeamID) AS predicted_team,(SELECT teams.Name FROM teams WHERE teams.teamID = m.WinningTeamID) AS winning_team FROM prediction p,users u,teams t,`match` m WHERE p.playerID = " + playerID + " AND u.userid = p.playerID AND teamID = p.predictedTeamID AND m.matchID = p.matchID AND m.isActive=0 AND m.isLocked=0 AND m.isHidden=0;",
+        { type: sqlConn.QueryTypes.SELECT })
+        .then(function (matches) {
+
+            //fill response object and return
+            resObj.success = true;
+            resObj.count = matches.length;
+
+            resObj.userData['name'] = matches[0].player_name;
+            resObj.userData['points'] = matches[0].player_points;
+
+            for (var n = 0; n < matches.length; n++) {
+                var outcome = (matches[n].predicted_team == null)?"[TBD]":((matches[n].predicted_team == matches[n].winning_team)?"WIN":"LOSS");
+
+                resObj.historyData.push({
+                    team1Name: matches[n].team1,
+                    team2Name: matches[n].team2,
+                    matchDate: matches[n].match_date,
+                    predictedTeam: matches[n].predicted_team,
+                    winningTeam: matches[n].winning_team,
+                    result: outcome
+                });
+            }
+            //console.log("\n&&&&&USER_HISTORY::\n"+JSON.stringify(resObj)+"\n&&&&&&&&&\n");
+            res.json(resObj);
+            res.end();
+        })
+        .catch(function (err) {
+            //match find failed. Reply with message
+            utils.logMe("Error trying to fetch user match history. Details:\n" + err);
+            resObj.success = false;
+            resObj.message = err;
+
+            res.json(resObj);
+            res.end();
+        })
+
+
 })
 
 //get points for user

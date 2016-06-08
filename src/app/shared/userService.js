@@ -73,5 +73,8 @@ angular.module("psoft2UI").service("userService", function ($http){
         return promise;
     };
 
-
+    this.getPredictionHistoryByID = function(userID){
+        var promise = $http.get("/api/getHistoryByID?userID=" + userID);
+        return promise;
+    }
 });

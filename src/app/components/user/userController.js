@@ -2,7 +2,7 @@
     angular.module("psoft2UI").controller("userController", userCtrl);
     userCtrl.$inject = ['$scope', '$location', 'userService', '$window', 'md5'];
     function userCtrl($scope, $location, userService, $window, md5) {
-        //console.log("in the user controller");
+
         $scope.user = {};	//initially empty
         $scope.is_valid = true;
         
@@ -10,10 +10,9 @@
         
         $scope.is_waiting = false;			//enabled when waiting on server
         
-        $scope.gameHistory = [];
-        
-        var getUserPredictionHistory = function () {
-            
+/*
+       var getUserPredictionHistory = function () {
+
             userService.getPredictionHistory($scope.user.token)
 			.then(function (response) {
                 //console.log(angular.toJson(response.data));
@@ -35,7 +34,7 @@
                 console.log("Unable to fetch user prediction history. Details:\n" + err)
             })
         };
-/*
+
         if (!userService.checkLogin()) {
             if (!userService.checkSession()) {
                 //no session saved either, so redirect to login
@@ -67,7 +66,8 @@
             
             //also load user game history
             if ($scope.gameHistory.length == 0) { getUserPredictionHistory(); }
-        }*/
+        }
+*/
         
 /*
         $scope.logout = function () {
