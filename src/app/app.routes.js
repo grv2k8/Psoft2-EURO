@@ -27,7 +27,7 @@ angular.module("psoft2UI",['ngRoute','angular-md5','ui.grid'])
 			// 	caseInsensitiveMatch: 	true
 			// })
 			.when('/register',{
-				controller: 			'accountController',
+				controller: 			'registerController',
 				templateUrl: 			'/src/app/components/register/registerPartial.html',
 				caseInsensitiveMatch: 	true
 			})

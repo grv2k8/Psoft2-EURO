@@ -4,7 +4,7 @@ grjoshi 3/30/2016
 */
 
 (function () {
-    angular.module("psoft2UI").controller("accountController", addUserCtrl);
+    angular.module("psoft2UI").controller("registerController", addUserCtrl);
     addUserCtrl.$inject = ['$scope', '$location', 'userService', 'md5'];
     
     function addUserCtrl($scope, $location, userService, md5) {
@@ -17,10 +17,10 @@ grjoshi 3/30/2016
         
         $scope.registerUser = function () {
             
-            return;  //uncomment after registraion period expires
+            //return;  //uncomment after registraion period expires
 
             if ($scope.user.name == "" || $scope.user.email == "" || $scope.user.password == "") {
-                console.log("DBG::BLANK VALUES CANNOT BE SUBMITTED");
+                console.error("Blank values cannot be submitted!");
                 return;
             }
             
@@ -51,9 +51,7 @@ grjoshi 3/30/2016
                 //console.log("Added new user");
             })
 			.catch(function (response) {
-                err_msg = "There was an error while trying to create user account. Please contact the administrator with details from the console view (Press F12 to open Dev mode and click on 'console').";
-                console.log("ERROR trying to add user. Response was:" + response.status + "//" + response.data);
-                return;
+                $scope.err_msg = "ERROR trying to add user. Response was:" + response.status + "//" + response.data;
             })
         }
     }

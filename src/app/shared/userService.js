@@ -66,12 +66,12 @@ angular.module("psoft2UI").service("userService", function ($http){
         
         var promise = $http.post("/api/adduser", data);
         return promise;
-    }
+    };
     
     this.getPredictionHistory = function (token) {
         var promise = $http.get("/api/getHistory?token=" + token);
         return promise;
-    }
+    };
 
 
 });
