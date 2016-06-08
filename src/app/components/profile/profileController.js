@@ -64,6 +64,14 @@
                 })
         };
 
+        $scope.getDisplayPoints = function (resultStr)
+        {
+            if (resultStr == "[TBD]") return "[TBD]";
+            if (resultStr == "WIN") return "3";
+            return "0";
+        }
+
+
         if(!$routeParams.userid) {
             //this is token based, i.e. current user's account
             if ($scope.gameHistory.length == 0) { getMyGameHistory(); }

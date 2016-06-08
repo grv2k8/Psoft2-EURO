@@ -161,12 +161,6 @@
             return;
         };*/
 
-        $scope.getDisplayPoints = function (resultStr)
-        {
-            if (resultStr == "[TBD]") return "[TBD]";
-            if (resultStr == "WIN") return "3";
-            return "0";
-        }
 
     }
 })();
