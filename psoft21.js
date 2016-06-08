@@ -373,11 +373,10 @@ app.post("/api/submitPrediction", function (req, res) {
             .catch(function (err) {
             //console.log("\n\nCAUGHT, NOW RETURNING resObj!");
             //throw err;
-            //utils.logMe("PRED_EXCEPTION::" + err);
+            utils.logMe("PREDICTION_EXCEPTION::" + err);
             resObj.message = err;
             resObj.success = false;
             res.json(resObj);
-            return;
         })
     })
     .then(function () {

@@ -32,7 +32,7 @@ Controller that handles
         
         $scope.hasPredicted = true;
         
-        
+
         //visibility for poll options      
         $scope.showPolls = function () {
             
@@ -131,7 +131,7 @@ Controller that handles
             else {
                 //try submitting
                 $scope.predErr = false;
-                gameService.submitPrediction(userService.usrObj.token, $scope.selection)
+                gameService.submitPrediction(authService.usrObj.token, $scope.selection)
 			.then(function (response) {
                     if (response == null) {
                         throw "There was an error trying to send the prediction data. Please try again later";
