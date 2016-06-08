@@ -5,6 +5,7 @@ grjoshi 3/30/2016
 
 angular.module("psoft2UI").service("gameService", function ($http) {
 
+/*
 
     var predictionGrid = {
         columnDefs: [{ field: 'Name', displayName: 'Name' },
@@ -16,6 +17,7 @@ angular.module("psoft2UI").service("gameService", function ($http) {
 
     }
 
+*/
 
     this.getNextGame = function () {
         var promise = $http.get("/api/nextmatch");
@@ -50,7 +52,6 @@ angular.module("psoft2UI").service("gameService", function ($http) {
     }
     
     this.checkIfUserPredicted = function (user_token) {
-        //console.log("Checking token::" + user_token);
         var promise = $http.get("/api/checkIfPredicted?token=" + user_token);
         return promise;
     }

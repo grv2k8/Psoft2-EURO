@@ -16,7 +16,7 @@
 
             userService.getPredictionHistory(authService.getToken())
                 .then(function (response) {
-                    console.log(angular.toJson(response.data));
+                    //console.log(angular.toJson(response.data));
                     if (response == null) {
                         throw "There was an error trying to get user prediction history from the server. Please try again later";
                     }
@@ -42,7 +42,7 @@
 
             userService.getPredictionHistoryByID(userID)
                 .then(function (response) {
-                    console.log(angular.toJson(response.data));
+                    //console.log(angular.toJson(response.data));
                     if (response == null) {
                         throw "There was an error trying to get user prediction history from the server. Please try again later";
                     }
