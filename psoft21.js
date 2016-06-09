@@ -371,12 +371,21 @@ app.post("/api/submitPrediction", function (req, res) {
     };
 
     //utils.logMe("predObj::" + JSON.stringify(req.body.predObj));
+    if(!req.body || !req.body.predObj)
+    {
+        res.json({Message: "Invalid request, aborting..."});
+        return;
+    }
+
     var rows = req.body.predObj.length;
     var userID = 0;
     var team_id = 0;
+    var team_name = '';
     var match_id = 0;
     var team_id2 = 0;
     var match_id2 = 0;
+
+    var selectionList = '';             //list of teams selected by user
 
     sqlConn.query(
         "SELECT userID from users WHERE auth_key = '" + req.body.token + "'",
@@ -386,6 +395,8 @@ app.post("/api/submitPrediction", function (req, res) {
         userID = user_row[0].userID;
         team_id = req.body.predObj[0].teamID;
         match_id = req.body.predObj[0].matchID;
+        selectionList = selectionList + "\r\n *" + req.body.predObj[0].teamName;              //add team to selection list
+
 
         return Match.find({ where: { matchID: match_id, isLocked: 0 } })
             .then(function (active_rows) {
@@ -402,7 +413,7 @@ app.post("/api/submitPrediction", function (req, res) {
                     .spread(function (prediction, created) {
                 if (!created) {
                     //utils.logMe("TEAMID INSIDE findOrCreate is: " + team_id);
-                    //utils.logMe("EXISTING prediction object:" + JSON.stringify(prediction));
+                    //console.log("EXISTING prediction object:" ,prediction);
 
                     //prediction exists; update it
                     sqlConn.query(
@@ -410,9 +421,9 @@ app.post("/api/submitPrediction", function (req, res) {
                             { type: sqlConn.QueryTypes.UPDATE })
                             .then(function (updated) {
                                 utils.logMe("Updated for user " + userID + " for matchID: " + match_id + "; new team: " + team_id);
-
+                                //console.log(JSON.stringify(updated));
                                 //send email confirming change
-                                utils.sendConfirmation(new Date(),"You have updated your team to ??????????????????????????????????????????????????????","Khal Drogo",'grv2k6@gmail.com');
+                                //utils.sendConfirmation(new Date(),"You have updated your team to ??????????????????????????????????????????????????????","Khal Drogo",'grv2k6@gmail.com');
                         resObj.success = true;
                     })
                 }
@@ -422,6 +433,19 @@ app.post("/api/submitPrediction", function (req, res) {
                     resObj.success = true;
                 }
             });
+            ///////////////////////////////////////////////////////////////////////////////////////////
+            ///////////////////////////////////////////////////////////////////////////////////////////
+            ///////////////////////////////////////////////////////////////////////////////////////////
+            ///////////////////////////////////////////////////////////////////////////////////////////
+            ///////////////////////////////////////////////////////////////////////////////////////////
+            ///////////////////////////////////////////////////////////////////////////////////////////
+            ///////////////////////////////////////////////////////////////////////////////////////////
+            /////TODO: test email string for multiple games
+             //////////////////////////////////////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////////////////////////////////////
 
 
             //return resObj;
@@ -442,6 +466,7 @@ app.post("/api/submitPrediction", function (req, res) {
             //update second game if exists
             team_id2 = req.body.predObj[1].teamID;
             match_id2 = req.body.predObj[1].matchID;
+            selectionList = selectionList + "\r\n *" + req.body.predObj[1].teamName;              //add team to selection list
 
             Match.find({ where: { matchID: match_id2, isLocked: 0 } })
             .then(function (active_rows) {
@@ -463,13 +488,13 @@ app.post("/api/submitPrediction", function (req, res) {
                             "UPDATE prediction SET predictedTeamID=" + team_id2 + " WHERE playerID=" + userID + " AND matchID=" + match_id2,
                                 { type: sqlConn.QueryTypes.UPDATE })
                                 .then(function (updated2) {
-                            utils.logMe("Updated for user " + userID + " for matchID: " + match_id2 + "; new team: " + team_id2);
+                            utils.logMe("Updated for user " + userID + " for matchID: " + match_id2);
                             resObj.success = true;
                         })
                     }
                     else {
                         //new row has been created
-                        utils.logMe("New row has been created for user " + userID + " for matchID: " + match_id2 + "; new team: " + team_id2);
+                        utils.logMe("New row has been created for user " + userID + " for matchID: " + match_id2);
                         resObj.success = true;
                     }
                 })
@@ -485,12 +510,17 @@ app.post("/api/submitPrediction", function (req, res) {
         res.json(resObj);
         return;
     })
+    .then(function(){
+        utils.logMe("All predictions updated successfully. Now send email... with teams:: " + selectionList);
+        //utils.sendConfirmation(new Date(),"You have updated your team to ??????????????????????????????????????????????????????","Khal Drogo",'grv2k6@gmail.com');
+    })
     .catch(function (err) {
         //utils.logMe("PRED_EXCEPTION::" + err);
         resObj.message = err;
         resObj.success = false;
         return resObj;
     })
+
 });
 
 

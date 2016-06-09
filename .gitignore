@@ -10,3 +10,5 @@
 /src/node_modules/
 /app/
 /assets/img/*.zip
+/api/dbconfig.js
+/api/smtpconfig.js

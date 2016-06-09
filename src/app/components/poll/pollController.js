@@ -137,7 +137,7 @@ Controller that handles
                         throw "There was an error trying to send the prediction data. Please try again later";
                     }
                     
-                    //console.log(">>"+angular.toJson(response, true));
+                    console.log(">>"+angular.toJson(response, true));
                     
                     if (!response.data.success) {
                         //if(!response.data.message)
@@ -159,7 +159,7 @@ Controller that handles
         };
         
         //add each match's predictions inside a JSON object, to send back to server
-        $scope.selectTeam = function (matchID, teamID) {
+        $scope.selectTeam = function (matchID, teamID, teamName) {
             
             var doAdd = true;
             //builds the array to submit prediction data		
@@ -169,17 +169,19 @@ Controller that handles
                     //Existing item found, updating with new selection
                     //e.userID = userService.usrObj.userID;//$scope.userID;
                     e.teamID = teamID;
+                    e.teamName = teamName;
                     doAdd = false;
                     return;
                 }
-            })
+            });
             
             if (doAdd) {
                 $scope.selection.push(
                     {
                         //userID: userService.usrObj.userID,
                         matchID: matchID,
-                        teamID: teamID
+                        teamID: teamID,
+                        teamName: teamName
                     });
             }
             
