@@ -380,23 +380,29 @@ app.post("/api/submitPrediction", function (req, res) {
     var rows = req.body.predObj.length;
     var userID = 0;
     var team_id = 0;
-    var team_name = '';
     var match_id = 0;
     var team_id2 = 0;
     var match_id2 = 0;
+    var team_id3 = 0;
+    var match_id3 = 0;
+    var playerFullName = '';
+    var playerEmail = '';
 
-    var selectionList = '';             //list of teams selected by user
+    var selectionList = "";             //list of teams selected by user
 
     sqlConn.query(
-        "SELECT userID from users WHERE auth_key = '" + req.body.token + "'",
+        "SELECT userID, name, email from users WHERE auth_key = '" + req.body.token + "'",
     { type: sqlConn.QueryTypes.SELECT })
     .then(function (user_row) {
 
         userID = user_row[0].userID;
         team_id = req.body.predObj[0].teamID;
         match_id = req.body.predObj[0].matchID;
-        selectionList = selectionList + "\r\n *" + req.body.predObj[0].teamName;              //add team to selection list
+        selectionList = "<li><strong>" + req.body.predObj[0].teamName + "</strong></li>";              //add team to selection list
 
+        //fetch the following for sending user details with email
+        playerFullName = user_row[0].name;
+        playerEmail = user_row[0].email;
 
         return Match.find({ where: { matchID: match_id, isLocked: 0 } })
             .then(function (active_rows) {
@@ -433,20 +439,6 @@ app.post("/api/submitPrediction", function (req, res) {
                     resObj.success = true;
                 }
             });
-            ///////////////////////////////////////////////////////////////////////////////////////////
-            ///////////////////////////////////////////////////////////////////////////////////////////
-            ///////////////////////////////////////////////////////////////////////////////////////////
-            ///////////////////////////////////////////////////////////////////////////////////////////
-            ///////////////////////////////////////////////////////////////////////////////////////////
-            ///////////////////////////////////////////////////////////////////////////////////////////
-            ///////////////////////////////////////////////////////////////////////////////////////////
-            /////TODO: test email string for multiple games
-             //////////////////////////////////////////////////////////////////////////////////////////
-            //////////////////////////////////////////////////////////////////////////////////////////
-            //////////////////////////////////////////////////////////////////////////////////////////
-            //////////////////////////////////////////////////////////////////////////////////////////
-            //////////////////////////////////////////////////////////////////////////////////////////
-
 
             //return resObj;
             resObj.success = true;
@@ -466,10 +458,10 @@ app.post("/api/submitPrediction", function (req, res) {
             //update second game if exists
             team_id2 = req.body.predObj[1].teamID;
             match_id2 = req.body.predObj[1].matchID;
-            selectionList = selectionList + "\r\n *" + req.body.predObj[1].teamName;              //add team to selection list
+            selectionList = selectionList + "<li><strong>" + req.body.predObj[1].teamName + "</strong></li>";;              //add team to selection list
 
             Match.find({ where: { matchID: match_id2, isLocked: 0 } })
-            .then(function (active_rows) {
+                .then(function (active_rows) {
                 //check if this match has been locked
                 if (active_rows == null) {
                     utils.logMe("UserID " + userID + " has tried predicting matchID " + match_id2 + " after lockdown period. This has been logged!");
@@ -499,7 +491,7 @@ app.post("/api/submitPrediction", function (req, res) {
                     }
                 })
             })
-            .catch(function (err) {
+                .catch(function (err) {
                 //utils.logMe("PRED_EXCEPTION::" + err);
                 resObj.message = err;
                 resObj.success = false;
@@ -510,9 +502,58 @@ app.post("/api/submitPrediction", function (req, res) {
         res.json(resObj);
         return;
     })
+    .then(function () {
+        if (rows > 2) {
+            //update second game if exists
+            team_id3 = req.body.predObj[2].teamID;
+            match_id3 = req.body.predObj[2].matchID;
+            selectionList = selectionList + "<li><strong>" + req.body.predObj[2].teamName + "</strong></li>";              //add team to selection list
+
+            Match.find({ where: { matchID: match_id3, isLocked: 0 } })
+                .then(function (active_rows) {
+                    //check if this match has been locked
+                    if (active_rows == null) {
+                        utils.logMe("UserID " + userID + " has tried predicting matchID " + match_id3 + " after lockdown period. This has been logged!");
+                        throw "Sorry, the game has been locked! Prediction is not allowed at this time.";
+                    }
+                    //not locked, so prediction change is allowed
+                    return Prediction
+                        .findOrCreate({ where: { playerID: userID, matchID: match_id3 }, defaults: { predictedTeamID: team_id3 } })
+                        .spread(function (prediction3, created) {
+                            if (!created) {
+                                //utils.logMe("TEAMID INSIDE findOrCreate is: " + team_id2);
+                                //utils.logMe("EXISTING prediction object:" + JSON.stringify(prediction2));
+
+                                //prediction exists; update it
+                                sqlConn.query(
+                                    "UPDATE prediction SET predictedTeamID=" + team_id3 + " WHERE playerID=" + userID + " AND matchID=" + match_id3,
+                                    { type: sqlConn.QueryTypes.UPDATE })
+                                    .then(function (updated3) {
+                                        utils.logMe("Updated for user " + userID + " for matchID: " + match_id3);
+                                        resObj.success = true;
+                                    })
+                            }
+                            else {
+                                //new row has been created
+                                utils.logMe("New row has been created for user " + userID + " for matchID: " + match_id3);
+                                resObj.success = true;
+                            }
+                        })
+                })
+                .catch(function (err) {
+                    //utils.logMe("PRED_EXCEPTION::" + err);
+                    resObj.message = err;
+                    resObj.success = false;
+                    res.json(resObj);
+                    return;
+                })
+        }
+        //res.json(resObj);
+        //return;
+    })
     .then(function(){
-        utils.logMe("All predictions updated successfully. Now send email... with teams:: " + selectionList);
-        //utils.sendConfirmation(new Date(),"You have updated your team to ??????????????????????????????????????????????????????","Khal Drogo",'grv2k6@gmail.com');
+        //notify user via email about submission confirmation
+        utils.sendConfirmation(new Date(),"<p><strong>You have updated your prediction to:</strong></p><ul>" + selectionList + "</ul>", playerFullName, playerEmail);
     })
     .catch(function (err) {
         //utils.logMe("PRED_EXCEPTION::" + err);

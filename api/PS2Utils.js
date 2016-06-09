@@ -15,7 +15,11 @@ module.exports.logMe = function (message) {
 //send confirmation of prediction
 module.exports.sendConfirmation = function(matchdate,confirmSnippet,nameOfPlayer,playerEmail){
     var title = "Predictsoft v2.10 - Thank you for submitting your prediction for " + matchdate;
-    var messageBody = "Thank you " + nameOfPlayer + "! We have received your submission for " + matchdate + ".\r\n" + confirmSnippet + ". \r\n\r\nGood luck!";
+    var messageBody = "<h1>Thank you " + nameOfPlayer + "!</h1><h2>We have received your submission for " + matchdate + ".</h2>"
+        + "<p>&nbsp;</p>"+ confirmSnippet +"<p>&nbsp;</p>"
+        + "<p><strong>Good luck!</strong></p>"
+        + "<p><strong>The Predictsoft team</strong></p>"
+        + "<p>&nbsp;</p><p><strong>&nbsp;</strong></p>";
     //confirmSnippet is sth like "You chose [TEAM] for the next match.";
 
     sendEmail(
@@ -41,7 +45,6 @@ module.exports.sendMessage = function(to, title,message){
 };
 //private email method
 var sendEmail = function(to,from,title,mbody){
-    //TODO: Magic-fu here to send email
 
     var smtpConfig = {
       host: emailConfig.host,
@@ -60,10 +63,10 @@ var sendEmail = function(to,from,title,mbody){
         from: from,
         to: to,
         subject: title,
-        text: mbody         //TODO: change to html text
+        html: mbody         //HTML text
     };
 
-    console.log("EMAIL TITLE:",title,"Message: ",mbody);
+   // console.log("From",from,"TO:",to,"EMAIL TITLE:",title,"Message: ",mbody);
 
     transporter.sendMail(mailOptions, function (error,info){
         if(error){
