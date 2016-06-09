@@ -17,7 +17,7 @@ var Sequelize = require('sequelize');
 var bodyParser = require('body-parser');      //for letting Express handle POST data
 var favicon = require('serve-favicon');
 
-var dbconfig = require('./dbconfig.js');        //load config module
+var dbconfig = require('./api/dbconfig.js');        //load config module
 
 //load API modules
 var utils = require("./api/PS2Utils.js");
@@ -409,7 +409,10 @@ app.post("/api/submitPrediction", function (req, res) {
                         "UPDATE prediction SET predictedTeamID=" + team_id + " WHERE playerID=" + userID + " AND matchID=" + match_id,
                             { type: sqlConn.QueryTypes.UPDATE })
                             .then(function (updated) {
-                        utils.logMe("Updated for user " + userID + " for matchID: " + match_id + "; new team: " + team_id);
+                                utils.logMe("Updated for user " + userID + " for matchID: " + match_id + "; new team: " + team_id);
+
+                                //send email confirming change
+                                utils.sendConfirmation(new Date(),"You have updated your team to ??????????????????????????????????????????????????????","Khal Drogo",'grv2k6@gmail.com');
                         resObj.success = true;
                     })
                 }
@@ -419,6 +422,8 @@ app.post("/api/submitPrediction", function (req, res) {
                     resObj.success = true;
                 }
             });
+
+
             //return resObj;
             resObj.success = true;
         })
@@ -488,6 +493,11 @@ app.post("/api/submitPrediction", function (req, res) {
     })
 });
 
+
+app.get("/api/uTestEmail",function(req,res){
+    utils.sendConfirmation(new Date(),"You have chosen England as your team","Khal Drogo",'grv2k6@gmail.com');
+    res.json({message:'OK'});
+})
 
 /*=====================================Admin functions===============================*/
 
