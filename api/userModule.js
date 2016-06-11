@@ -56,9 +56,9 @@ exports.logIn = function (req,res,userModel) {
 
 exports.addUser = function(req,res,userModel){
     /////////uncomment the following after registration period expires
-    // utils.logMe("Registration period has expired. Unable to register account for " + req.body.email);
-    // res.json({ success: false, message: "Registration period has ended. New accounts will not be added!" });
-    // return;
+    utils.logMe("Registration period has expired. Unable to register account for " + req.body.email);
+    res.json({ success: false, message: "Registration period has ended. New accounts will not be added!" });
+    return;
     /////////////////////////////////////////
 
     //Password hashing has been taken care of on the client side
