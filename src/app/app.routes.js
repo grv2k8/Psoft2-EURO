@@ -41,6 +41,11 @@ angular.module("psoft2UI",['ngRoute','angular-md5','ui.grid'])
 				templateUrl: 			'/src/app/components/profile/profilePartial.html',
 				caseInsensitiveMatch: 	true
 			})
+			.when('/rules',{
+				controller:				'profileController',
+				templateUrl:			'/src/app/components/rules/rulesPartial.html',
+				caseInsensitiveMatch: 	true
+			})
 			.otherwise({
 				template: "<H1>Page not found</H1>",
 				//templateUrl: "/app/views/notFoundPartial.html",
