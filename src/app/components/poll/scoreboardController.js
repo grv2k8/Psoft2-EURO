@@ -9,7 +9,7 @@ Controller that handles leaderboard view
     function sbCtrl($scope, $location,gameService) {
 
         $scope.scoreGrid = {
-            minRowsToShow: 12,
+            minRowsToShow: 17,
             columnDefs: [{ field: 'Name', displayName: 'Name' },
                 { field: 'Points', displayName: 'Score', width: 100 }]
         };
