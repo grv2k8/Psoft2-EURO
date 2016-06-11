@@ -9,7 +9,7 @@
  * */
 
 var nofapp = 'PSOFT21_EURO';        //identifier for application
-var port = 8080;                    //port that server will run on
+var port = 8088;                    //port that server will run on
 var express = require('express');
 var app = express();
 var morgan = require('morgan');

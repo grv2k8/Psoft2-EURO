@@ -21,6 +21,9 @@ Controller that retrieves prediction list for current match from submitted entri
             return;
         }
 
+        // TODO: something to update grid dynamically?
+        // $scope.$watch(currentPredList)
+
         //get Prediction from API
         gameService.getPredictionList($scope.user_token)
             .then(function (response) {
