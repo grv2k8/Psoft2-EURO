@@ -165,21 +165,36 @@ app.get("/api/getPredictions", function (req, res) {
         }
         if (active_rows.isHidden == 1) {
             //show only current user's prediction
-            query = "SELECT u.name as name, (SELECT Name FROM teams WHERE teamID = p.predictedTeamID) As PredictedTeam FROM prediction p, users u WHERE p.playerID = u.userID AND u.userID = (SELECT userID from users where auth_key = '" + tokenID + "') AND p.matchID IN ( SELECT matchID FROM `match` WHERE isActive =1)";
+            query = "SELECT u.name,(SELECT Name FROM teams WHERE teamID = p.predictedTeamID) As PredictedTeam,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team1ID) AS team1,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team2ID) AS team2 " + "" +
+                        "FROM prediction p, users u, teams t, `match` m " +
+                        "WHERE p.playerID = u.userID AND "+
+                        "u.userID = (SELECT userID from users where auth_key = '" + tokenID + "') AND "+
+                        "p.matchID IN (SELECT matchID FROM `match` WHERE isActive =1) AND "+
+                        "p.matchID = m.matchID AND "+
+                        "t.teamID IN (m.Team1ID, m.Team2ID, 50) AND "+
+                        "p.predictedTeamID = t.teamID";
         }
         else {
             //show everyone's predictions
-            query = "SELECT u.name as name, (SELECT Name FROM teams WHERE teamID = p.predictedTeamID) As PredictedTeam FROM prediction p, users u WHERE p.playerID = u.userID AND p.matchID IN ( SELECT matchID FROM `match` WHERE isActive =1 AND isHidden=0)";
+            query = "SELECT u.name,(SELECT Name FROM teams WHERE teamID = p.predictedTeamID) As PredictedTeam,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team1ID) AS team1,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team2ID) AS team2 " + "" +
+                        "FROM prediction p, users u, teams t, `match` m " +
+                        "WHERE p.playerID = u.userID AND "+
+                        "p.matchID IN (SELECT matchID FROM `match` WHERE isActive =1 AND isHidden=0) AND "+
+                        "p.matchID = m.matchID AND "+
+                        "t.teamID IN (m.Team1ID, m.Team2ID, 50) AND "+
+                        "p.predictedTeamID = t.teamID";
         }
         
         sqlConn.query(query, { type: sqlConn.QueryTypes.SELECT })
             .then(function (predictions) {
-            for (var n = 0; n < predictions.length; n++) {
-                
-                resObj.predictData.push({
-                    Name: predictions[n].name,
-                    Team: predictions[n].PredictedTeam
-                })
+                var team='';
+                for (var n = 0; n < predictions.length; n++) {
+                    //if draw has been predicted, show competing teams in brackets (so it's more descriptive for multi-game days)
+                    team = (predictions[n].PredictedTeam === "DRAW")?"DRAW ("+ predictions[n].team1 + " vs " + predictions[n].team2 +")":predictions[n].PredictedTeam;
+                    resObj.predictData.push({
+                        Name: predictions[n].name,
+                        Team: team
+                    })
             }
             //utils.logMe(JSON.stringify(resObj));            
             resObj.success = true;
