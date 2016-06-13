@@ -585,6 +585,60 @@ app.get("/api/uTestEmail",function(req,res){
     res.json({message:'OK'});
 })
 
+app.get("/api/testNextMatch",function(req,res){
+    var resObj = {
+        count: 0,
+        matchData: [],
+        message: "",
+        success: false
+    };
+
+    var nextMatchDay = utils.getTomorrowsDate();
+    console.log("Next day is: " + nextMatchDay);
+
+    res.json({message:'OK'});
+    // sqlConn.query(
+    //     "SELECT team1.teamID as t1ID,team1.name as t1Name,team1.group as t1Group, team1.logoURL as t1logoURL, team2.teamID as t2ID,team2.name as t2Name, team2.group as t2Group, team2.logoURL as t2logoURL, match.matchID as matchID, match.isLocked as locked, match.MatchDate as date FROM `match` LEFT JOIN (teams as team1, teams as team2) ON (team1.teamID = `match`.Team1ID AND team2.teamID = `match`.Team2ID) WHERE isActive=1",
+    //     { type: sqlConn.QueryTypes.SELECT })
+    //     .then(function (matches) {
+    //         //fill response object and return
+    //         resObj.success = true;
+    //         resObj.count = matches.length;
+    //
+    //         for (var n = 0; n < matches.length; n++) {
+    //
+    //             //TODO: update query to also select current predictions for user
+    //
+    //             resObj.matchData.push({
+    //                 matchID: matches[n].matchID,
+    //                 team1ID: matches[n].t1ID,
+    //                 team1Name: matches[n].t1Name,
+    //                 team1LogoPath: matches[n].t1logoURL,
+    //                 //team1Group: matches[n].t1Group,
+    //                 team2ID: matches[n].t2ID,
+    //                 team2Name: matches[n].t2Name,
+    //                 team2LogoPath: matches[n].t2logoURL,
+    //                 //team2Group: matches[n].t2Group,
+    //                 locked: (matches[n].locked == 0)?false:true,        //this will enable/disable prediction for particular match
+    //                 date: matches[n].date
+    //             });
+    //         }
+    //         res.json(resObj);
+    //         res.end();
+    //     })
+    //     .catch(function (err) {
+    //         //match find failed. Reply with message
+    //         utils.logMe("Error trying to fetch match details.Message:\n" + err);
+    //         resObj.success = false;
+    //         resObj.message = err;
+    //
+    //         res.json(resObj);
+    //         res.end();
+    //     })
+
+
+})
+
 /*=====================================Admin functions===============================*/
 
 app.get("/api/adminUpdateScores", function (req, res) {

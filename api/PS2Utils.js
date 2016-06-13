@@ -2,15 +2,30 @@
 // PS2Utils.js - Utility functions for PredictSoft v2.00
 
 var nodemailer = require('nodemailer');
+var moment = require('moment');
 
 var emailConfig = require('./smtpconfig.js');
 
 /* logMe(message) - Log messages to console */
 
+
+
 module.exports.logMe = function (message) {
-    var dt = (new Date()).toString().split(' ').splice(1, 4).join(' ');
-    console.log("[" + dt + "] " + message);
+    console.log("[" + getNow() + "] " + message);
 };
+
+module.exports.getToday = function(){
+   console.log(moment().format());
+};
+
+
+module.exports.getTomorrowsDate = function(){
+    return moment().add(1,'days').calendar();
+};
+
+module.exports.getNow = function(){
+    return getNow();
+}
 
 //send confirmation of prediction
 module.exports.sendConfirmation = function(matchdate,confirmSnippet,nameOfPlayer,playerEmail){
@@ -76,3 +91,7 @@ var sendEmail = function(to,from,title,mbody){
         console.log("Email sent to" , to , "successfully. Info.response =",info.response);       //does this go (in the future) into a separate verbose.log file?
     });
 };
+
+var getNow=function(){
+    return moment().format('MMM DD YYYY HH:mm:ss');
+}
