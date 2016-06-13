@@ -137,7 +137,7 @@ Controller that handles
                         throw "There was an error trying to send the prediction data. Please try again later";
                     }
                     
-                    console.log(">>"+angular.toJson(response, true));
+                    //console.log(">>"+angular.toJson(response, true));
                     
                     if (!response.data.success) {
                         //if(!response.data.message)
