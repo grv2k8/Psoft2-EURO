@@ -11,8 +11,14 @@ Controller that retrieves prediction list for current match from submitted entri
         $scope.lockDown = false;
         $scope.user_token = authService.getToken();
         $scope.predictionGrid = {
-            columnDefs: [{ field: 'Name', displayName: 'Name' },
-                { field: 'Team', displayName: 'Predicted Team' }]
+            columnDefs: [
+                { field: 'href',
+                    displayName: 'Name',
+                    cellTemplate: '<div class="ngCellText"><a href="/src/index.html#/profile?id={{row.entity.uid}}">{{row.entity.Name}}</a></div>'
+                },
+                { field: 'Team',
+                    displayName: 'Predicted Team'
+                }]
         };
 
         //quick hack for semi and finals:

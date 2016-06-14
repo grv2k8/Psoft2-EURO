@@ -165,7 +165,7 @@ app.get("/api/getPredictions", function (req, res) {
         }
         if (active_rows.isHidden == 1) {
             //show only current user's prediction
-            query = "SELECT u.name,(SELECT Name FROM teams WHERE teamID = p.predictedTeamID) As PredictedTeam,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team1ID) AS team1,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team2ID) AS team2 " + "" +
+            query = "SELECT u.userID, u.name,(SELECT Name FROM teams WHERE teamID = p.predictedTeamID) As PredictedTeam,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team1ID) AS team1,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team2ID) AS team2 " + "" +
                         "FROM prediction p, users u, teams t, `match` m " +
                         "WHERE p.playerID = u.userID AND "+
                         "u.userID = (SELECT userID from users where auth_key = '" + tokenID + "') AND "+
@@ -176,7 +176,7 @@ app.get("/api/getPredictions", function (req, res) {
         }
         else {
             //show everyone's predictions
-            query = "SELECT u.name,(SELECT Name FROM teams WHERE teamID = p.predictedTeamID) As PredictedTeam,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team1ID) AS team1,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team2ID) AS team2 " + "" +
+            query = "SELECT u.userID,u.name,(SELECT Name FROM teams WHERE teamID = p.predictedTeamID) As PredictedTeam,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team1ID) AS team1,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team2ID) AS team2 " + "" +
                         "FROM prediction p, users u, teams t, `match` m " +
                         "WHERE p.playerID = u.userID AND "+
                         "p.matchID IN (SELECT matchID FROM `match` WHERE isActive =1 AND isHidden=0) AND "+
@@ -192,6 +192,7 @@ app.get("/api/getPredictions", function (req, res) {
                     //if draw has been predicted, show competing teams in brackets (so it's more descriptive for multi-game days)
                     team = (predictions[n].PredictedTeam === "DRAW")?"DRAW ("+ predictions[n].team1 + " vs " + predictions[n].team2 +")":predictions[n].PredictedTeam;
                     resObj.predictData.push({
+                        uid: predictions[n].userID,
                         Name: predictions[n].name,
                         Team: team
                     })
@@ -311,7 +312,20 @@ app.get("/api/getHistoryByID", function(req,res){
     var playerID = req.query.userID;
 
     sqlConn.query(
-        "SELECT u.name as player_name, u.points as player_points, m.MatchDate AS match_date,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team1ID) AS team1,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team2ID) AS team2,(SELECT teams.Name FROM teams WHERE teams.teamID = p.predictedTeamID) AS predicted_team,(SELECT teams.Name FROM teams WHERE teams.teamID = m.WinningTeamID) AS winning_team FROM prediction p,users u,teams t,`match` m WHERE p.playerID = " + playerID + " AND u.userid = p.playerID AND teamID = p.predictedTeamID AND m.matchID = p.matchID AND m.isActive=0 AND m.isLocked=0 AND m.isHidden=0;",
+        "SELECT " +
+            "u.name as player_name, " +
+            "u.points as player_points, " +
+            "m.MatchDate AS match_date," +
+            "(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team1ID) AS team1,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team2ID) AS team2," +
+            "(SELECT teams.Name FROM teams WHERE teams.teamID = p.predictedTeamID) AS predicted_team,(SELECT teams.Name FROM teams WHERE teams.teamID = m.WinningTeamID) AS winning_team " +
+        "FROM " +
+            "prediction p,users u,teams t,`match` m " +
+        "WHERE " +
+            "p.playerID = " + playerID + " AND " +
+            "u.userid = p.playerID AND " +
+            "teamID = p.predictedTeamID AND " +
+            "m.matchID = p.matchID AND " +
+            "m.isActive=0 AND m.isLocked=1 AND m.isHidden=0",
         { type: sqlConn.QueryTypes.SELECT })
         .then(function (matches) {
 
