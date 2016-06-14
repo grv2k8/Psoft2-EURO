@@ -72,14 +72,14 @@
         }
 
 
-        if(!$routeParams.userid) {
+        if(!$routeParams.id) {
             //this is token based, i.e. current user's account
             if ($scope.gameHistory.length == 0) { getMyGameHistory(); }
         }
 
-        if($routeParams.userid) {
+        if($routeParams.id) {
             //fetch prediction history for user with userid
-            getUserGameHistory($routeParams.userid);
+            getUserGameHistory($routeParams.id);
         }
     }
 })();

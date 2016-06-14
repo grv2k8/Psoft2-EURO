@@ -165,7 +165,7 @@ app.get("/api/getPredictions", function (req, res) {
         }
         if (active_rows.isHidden == 1) {
             //show only current user's prediction
-            query = "SELECT u.name,(SELECT Name FROM teams WHERE teamID = p.predictedTeamID) As PredictedTeam,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team1ID) AS team1,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team2ID) AS team2 " + "" +
+            query = "SELECT u.userID, u.name,(SELECT Name FROM teams WHERE teamID = p.predictedTeamID) As PredictedTeam,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team1ID) AS team1,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team2ID) AS team2 " + "" +
                         "FROM prediction p, users u, teams t, `match` m " +
                         "WHERE p.playerID = u.userID AND "+
                         "u.userID = (SELECT userID from users where auth_key = '" + tokenID + "') AND "+
@@ -176,7 +176,7 @@ app.get("/api/getPredictions", function (req, res) {
         }
         else {
             //show everyone's predictions
-            query = "SELECT u.name,(SELECT Name FROM teams WHERE teamID = p.predictedTeamID) As PredictedTeam,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team1ID) AS team1,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team2ID) AS team2 " + "" +
+            query = "SELECT u.userID,u.name,(SELECT Name FROM teams WHERE teamID = p.predictedTeamID) As PredictedTeam,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team1ID) AS team1,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team2ID) AS team2 " + "" +
                         "FROM prediction p, users u, teams t, `match` m " +
                         "WHERE p.playerID = u.userID AND "+
                         "p.matchID IN (SELECT matchID FROM `match` WHERE isActive =1 AND isHidden=0) AND "+
@@ -192,6 +192,7 @@ app.get("/api/getPredictions", function (req, res) {
                     //if draw has been predicted, show competing teams in brackets (so it's more descriptive for multi-game days)
                     team = (predictions[n].PredictedTeam === "DRAW")?"DRAW ("+ predictions[n].team1 + " vs " + predictions[n].team2 +")":predictions[n].PredictedTeam;
                     resObj.predictData.push({
+                        uid: predictions[n].userID,
                         Name: predictions[n].name,
                         Team: team
                     })
@@ -311,7 +312,20 @@ app.get("/api/getHistoryByID", function(req,res){
     var playerID = req.query.userID;
 
     sqlConn.query(
-        "SELECT u.name as player_name, u.points as player_points, m.MatchDate AS match_date,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team1ID) AS team1,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team2ID) AS team2,(SELECT teams.Name FROM teams WHERE teams.teamID = p.predictedTeamID) AS predicted_team,(SELECT teams.Name FROM teams WHERE teams.teamID = m.WinningTeamID) AS winning_team FROM prediction p,users u,teams t,`match` m WHERE p.playerID = " + playerID + " AND u.userid = p.playerID AND teamID = p.predictedTeamID AND m.matchID = p.matchID AND m.isActive=0 AND m.isLocked=0 AND m.isHidden=0;",
+        "SELECT " +
+            "u.name as player_name, " +
+            "u.points as player_points, " +
+            "m.MatchDate AS match_date," +
+            "(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team1ID) AS team1,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team2ID) AS team2," +
+            "(SELECT teams.Name FROM teams WHERE teams.teamID = p.predictedTeamID) AS predicted_team,(SELECT teams.Name FROM teams WHERE teams.teamID = m.WinningTeamID) AS winning_team " +
+        "FROM " +
+            "prediction p,users u,teams t,`match` m " +
+        "WHERE " +
+            "p.playerID = " + playerID + " AND " +
+            "u.userid = p.playerID AND " +
+            "teamID = p.predictedTeamID AND " +
+            "m.matchID = p.matchID AND " +
+            "m.isActive=0 AND m.isLocked=1 AND m.isHidden=0",
         { type: sqlConn.QueryTypes.SELECT })
         .then(function (matches) {
 
@@ -583,6 +597,60 @@ app.post("/api/submitPrediction", function (req, res) {
 app.get("/api/uTestEmail",function(req,res){
     utils.sendConfirmation(new Date(),"You have chosen England as your team","Khal Drogo",'grv2k6@gmail.com');
     res.json({message:'OK'});
+})
+
+app.get("/api/testNextMatch",function(req,res){
+    var resObj = {
+        count: 0,
+        matchData: [],
+        message: "",
+        success: false
+    };
+
+    var nextMatchDay = utils.getTomorrowsDate();
+    console.log("Next day is: " + nextMatchDay);
+
+    res.json({message:'OK'});
+    // sqlConn.query(
+    //     "SELECT team1.teamID as t1ID,team1.name as t1Name,team1.group as t1Group, team1.logoURL as t1logoURL, team2.teamID as t2ID,team2.name as t2Name, team2.group as t2Group, team2.logoURL as t2logoURL, match.matchID as matchID, match.isLocked as locked, match.MatchDate as date FROM `match` LEFT JOIN (teams as team1, teams as team2) ON (team1.teamID = `match`.Team1ID AND team2.teamID = `match`.Team2ID) WHERE isActive=1",
+    //     { type: sqlConn.QueryTypes.SELECT })
+    //     .then(function (matches) {
+    //         //fill response object and return
+    //         resObj.success = true;
+    //         resObj.count = matches.length;
+    //
+    //         for (var n = 0; n < matches.length; n++) {
+    //
+    //             //TODO: update query to also select current predictions for user
+    //
+    //             resObj.matchData.push({
+    //                 matchID: matches[n].matchID,
+    //                 team1ID: matches[n].t1ID,
+    //                 team1Name: matches[n].t1Name,
+    //                 team1LogoPath: matches[n].t1logoURL,
+    //                 //team1Group: matches[n].t1Group,
+    //                 team2ID: matches[n].t2ID,
+    //                 team2Name: matches[n].t2Name,
+    //                 team2LogoPath: matches[n].t2logoURL,
+    //                 //team2Group: matches[n].t2Group,
+    //                 locked: (matches[n].locked == 0)?false:true,        //this will enable/disable prediction for particular match
+    //                 date: matches[n].date
+    //             });
+    //         }
+    //         res.json(resObj);
+    //         res.end();
+    //     })
+    //     .catch(function (err) {
+    //         //match find failed. Reply with message
+    //         utils.logMe("Error trying to fetch match details.Message:\n" + err);
+    //         resObj.success = false;
+    //         resObj.message = err;
+    //
+    //         res.json(resObj);
+    //         res.end();
+    //     })
+
+
 })
 
 /*=====================================Admin functions===============================*/

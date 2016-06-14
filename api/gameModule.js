@@ -14,7 +14,7 @@ exports.getScoreBoard = function(req,res,userModel) {
     };
 
     userModel.findAll({
-        attributes: ['name', 'points'],
+        attributes: ['userID','name', 'points'],
         order: 'points DESC'
     })
         .then(function (scores) {
@@ -23,6 +23,7 @@ exports.getScoreBoard = function(req,res,userModel) {
             for (var n = 0; n < scores.length; n++) {
                 //console.log(JSON.stringify(scores));
                 resObj.scoreData.push({
+                    uid: scores[n].userID,
                     Name: scores[n].name,
                     Points: scores[n].points
                 });
