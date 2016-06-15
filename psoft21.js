@@ -417,6 +417,7 @@ app.post("/api/submitPrediction", function (req, res) {
     var playerFullName = '';
     var playerEmail = '';
 
+    var match_date = '';
     var selectionList = "";             //list of teams selected by user
 
     sqlConn.query(
@@ -436,12 +437,15 @@ app.post("/api/submitPrediction", function (req, res) {
         return Match.find({ where: { matchID: match_id, isLocked: 0 } })
             .then(function (active_rows) {
 
+                //console.log("returning active rows for match:: %o",active_rows);
+
             //check if this match has been locked
             if (active_rows == null) {
 
                 utils.logMe("UserID " + userID + " has tried predicting " + match_id + " after lockdown period. This has been logged!");
                 throw "Sorry, the game has been locked! Prediction is not allowed at this time.";
             }
+                match_date = active_rows.MatchDate;
             //not locked, so prediction change is allowed
             return Prediction
                     .findOrCreate({ where: { playerID: userID, matchID: match_id }, defaults: { predictedTeamID: team_id } })
@@ -582,7 +586,7 @@ app.post("/api/submitPrediction", function (req, res) {
     })
     .then(function(){
         //notify user via email about submission confirmation
-        utils.sendConfirmation(new Date(),"<p><strong>You have updated your prediction to:</strong></p><ul>" + selectionList + "</ul>", playerFullName, playerEmail);
+        utils.sendConfirmation(match_date,"<p><strong>You have updated your prediction to:</strong></p><ul>" + selectionList + "</ul>", playerFullName, playerEmail);
     })
     .catch(function (err) {
         //utils.logMe("PRED_EXCEPTION::" + err);
