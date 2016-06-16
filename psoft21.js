@@ -177,21 +177,22 @@ app.get("/api/getPredictions", function (req, res) {
             query = "SELECT u.userID, u.name,(SELECT Name FROM teams WHERE teamID = p.predictedTeamID) As PredictedTeam,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team1ID) AS team1,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team2ID) AS team2 " + "" +
                         "FROM prediction p, users u, teams t, `match` m " +
                         "WHERE p.playerID = u.userID AND "+
-                        "u.userID = (SELECT userID from users where auth_key = '" + tokenID + "') AND "+
-                        "p.matchID IN (SELECT matchID FROM `match` WHERE isActive =1) AND "+
-                        "p.matchID = m.matchID AND "+
-                        "t.teamID IN (m.Team1ID, m.Team2ID, 50) AND "+
-                        "p.predictedTeamID = t.teamID";
+                            "u.userID = (SELECT userID from users where auth_key = '" + tokenID + "') AND "+
+                            "p.matchID IN (SELECT matchID FROM `match` WHERE isActive =1) AND "+
+                            "p.matchID = m.matchID AND "+
+                            "t.teamID IN (m.Team1ID, m.Team2ID, 50) AND "+
+                            "p.predictedTeamID = t.teamID";
         }
         else {
             //show everyone's predictions
             query = "SELECT u.userID,u.name,(SELECT Name FROM teams WHERE teamID = p.predictedTeamID) As PredictedTeam,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team1ID) AS team1,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team2ID) AS team2 " + "" +
                         "FROM prediction p, users u, teams t, `match` m " +
                         "WHERE p.playerID = u.userID AND "+
-                        "p.matchID IN (SELECT matchID FROM `match` WHERE isActive =1 AND isHidden=0) AND "+
-                        "p.matchID = m.matchID AND "+
-                        "t.teamID IN (m.Team1ID, m.Team2ID, 50) AND "+
-                        "p.predictedTeamID = t.teamID";
+                            "p.matchID IN (SELECT matchID FROM `match` WHERE isActive =1 AND isHidden=0) AND "+
+                            "p.matchID = m.matchID AND "+
+                            "t.teamID IN (m.Team1ID, m.Team2ID, 50) AND "+
+                            "p.predictedTeamID = t.teamID " +
+                        " ORDER BY u.name ASC";
         }
         
         sqlConn.query(query, { type: sqlConn.QueryTypes.SELECT })

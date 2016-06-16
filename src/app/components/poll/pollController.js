@@ -74,7 +74,7 @@ Controller that handles
 */
 
         if (!authService.isLoggedIn()) {
-            //try loading user session from 
+            //try loading user session from localstorage
             if (!authService.loadSession()) {
                 //no session saved either, so redirect to login
                 console.log("User object not set. Redirecting to login...");
