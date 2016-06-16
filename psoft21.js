@@ -107,7 +107,16 @@ app.get("/api/nextmatch", function (req, res) {
     };
     //Using isActive column to determine which matches are to be shown
     sqlConn.query(
-        "SELECT team1.teamID as t1ID,team1.name as t1Name,team1.group as t1Group, team1.logoURL as t1logoURL, team2.teamID as t2ID,team2.name as t2Name, team2.group as t2Group, team2.logoURL as t2logoURL, match.matchID as matchID, match.isLocked as locked, match.MatchDate as date FROM `match` LEFT JOIN (teams as team1, teams as team2) ON (team1.teamID = `match`.Team1ID AND team2.teamID = `match`.Team2ID) WHERE isActive=1",
+        "SELECT team1.teamID as t1ID,team1.name as t1Name,team1.group as t1Group, team1.logoURL as t1logoURL, " +
+                "team2.teamID as t2ID,team2.name as t2Name, team2.group as t2Group, team2.logoURL as t2logoURL, " +
+                "match.matchID as matchID, " +
+                "match.isLocked as locked, " +
+                "match.MatchDate as date " +
+        "FROM " +
+            "`match` LEFT JOIN (teams as team1, teams as team2) " +
+                    "ON (team1.teamID = `match`.Team1ID AND team2.teamID = `match`.Team2ID) " +
+        "WHERE " +
+            "isActive=1",           //todo: use date calculation fu to figure out which is the list of upcoming matches the same day or next day
         { type: sqlConn.QueryTypes.SELECT })
         .then(function (matches) {
         //fill response object and return

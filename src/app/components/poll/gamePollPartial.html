@@ -20,7 +20,8 @@
                             <form>
                                 <div class="col-sm-4">
                                     <div class="panel panel-primary">
-                                        <div class="panel-heading">
+                                        <div class="panel-heading" >
+                                            <span style="background-color: red;" ng-show="x.locked">Locked</span>
                                         </div>
                                         <div class="panel-body text-center">
                                             <span><img src="{{x.team1LogoPath}}" alt="{{x.team1Name}}"  width="42" height="42" /> </span>
@@ -32,6 +33,7 @@
                                 <div class="col-sm-4">
                                     <div class="panel panel-primary">
                                         <div class="panel-heading">
+                                            <span style="background-color: red;" ng-show="x.locked">Locked</span>
                                         </div>
                                         <div class="panel-body text-center" style="height: 72px; padding-top: 25px;">
                                             <span>DRAW</span>
@@ -42,6 +44,7 @@
                                 <div class="col-sm-4">
                                     <div class="panel panel-primary">
                                         <div class="panel-heading">
+                                            <span style="background-color: red;" ng-show="x.locked">Locked</span>
                                         </div>
                                         <div class="panel-body text-center">
                                             <div class="pull-right">
