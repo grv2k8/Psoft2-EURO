@@ -11,6 +11,7 @@ Controller that retrieves prediction list for current match from submitted entri
         $scope.lockDown = false;
         $scope.user_token = authService.getToken();
         $scope.predictionGrid = {
+            enableColumnMenus: false,
             columnDefs: [
                 { field: 'href',
                     displayName: 'Name',

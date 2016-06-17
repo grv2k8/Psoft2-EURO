@@ -10,15 +10,19 @@ Controller that handles leaderboard view
 
         $scope.scoreGrid = {
             minRowsToShow: 17,
+            enableColumnMenus: false,
             columnDefs: [{
                 field: 'Name',
-                displayName: 'Name',
+                displayName: 'Player Name',
+                width: "85%",
                 cellTemplate: '<div class="ngCellText"><a href="/src/index.html#/profile?id={{row.entity.uid}}">{{row.entity.Name}}</a></div>'
             },
             {
                 field: 'Points',
-                displayName: 'Score',
-                width: 100 }]
+                displayName: '',
+                width: "15%",
+                enableSorting: false
+            }]
         };
 
         //get leaderboard for scores
