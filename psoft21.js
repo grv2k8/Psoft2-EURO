@@ -430,6 +430,8 @@ app.post("/api/submitPrediction", function (req, res) {
     var match_date = '';
     var selectionList = "";             //list of teams selected by user
 
+    var game_locked_message = "Sorry! Prediction for one (or more) game(s) might not have been added because the game was locked. Please refresh your browser to continue with other predictions.";
+
     sqlConn.query(
         "SELECT userID, name, email from users WHERE auth_key = '" + req.body.token + "'",
     { type: sqlConn.QueryTypes.SELECT })
@@ -453,7 +455,10 @@ app.post("/api/submitPrediction", function (req, res) {
             if (active_rows == null) {
 
                 utils.logMe("UserID " + userID + " has tried predicting " + match_id + " after lockdown period. This has been logged!");
-                throw "Sorry, the game has been locked! Prediction is not allowed at this time.";
+                //throw game_locked_message;
+                resObj.message = game_locked_message;
+                resObj.success = false;
+                return resObj;
             }
                 match_date = active_rows.MatchDate;
             //not locked, so prediction change is allowed
@@ -508,7 +513,10 @@ app.post("/api/submitPrediction", function (req, res) {
                 //check if this match has been locked
                 if (active_rows == null) {
                     utils.logMe("UserID " + userID + " has tried predicting matchID " + match_id2 + " after lockdown period. This has been logged!");
-                    throw "Sorry, the game has been locked! Prediction is not allowed at this time.";
+                    //throw "Sorry, the game has been locked! Prediction is not allowed at this time.";
+                    resObj.message = game_locked_message;
+                    resObj.success = false;
+                    return resObj;
                 }
                 //not locked, so prediction change is allowed
                 return Prediction
@@ -557,7 +565,10 @@ app.post("/api/submitPrediction", function (req, res) {
                     //check if this match has been locked
                     if (active_rows == null) {
                         utils.logMe("UserID " + userID + " has tried predicting matchID " + match_id3 + " after lockdown period. This has been logged!");
-                        throw "Sorry, the game has been locked! Prediction is not allowed at this time.";
+                        //throw "Sorry, the game has been locked! Prediction is not allowed at this time.";
+                        resObj.message = game_locked_message;
+                        resObj.success = false;
+                        return resObj;
                     }
                     //not locked, so prediction change is allowed
                     return Prediction

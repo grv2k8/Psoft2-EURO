@@ -131,7 +131,9 @@ Controller that handles
             });
 
             console.log("Found total of ",lgc," locked games");
-            if ($scope.games.length != $scope.selection.length) {
+
+            //check total game count = number of selection + locked games
+            if ($scope.games.length != ($scope.selection.length + lgc)) {
                 $scope.predErr = true;
                 return;
             }
