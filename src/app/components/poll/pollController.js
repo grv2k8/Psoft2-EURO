@@ -74,7 +74,7 @@ Controller that handles
 */
 
         if (!authService.isLoggedIn()) {
-            //try loading user session from 
+            //try loading user session from localstorage
             if (!authService.loadSession()) {
                 //no session saved either, so redirect to login
                 console.log("User object not set. Redirecting to login...");
@@ -109,6 +109,7 @@ Controller that handles
                 else {
                     $scope.games = response.data.matchData.slice();		//copy games info to scope
                     $scope.nogames = false;
+                    console.log("Match info returned: %o",response.data.matchData);
                 }
                 return;
             })
@@ -123,8 +124,16 @@ Controller that handles
         $scope.submitPoll = function () {
             //submit prediction data to the server
             
-            //check if all matches have been predicted
-            if ($scope.games.length != $scope.selection.length) {
+            //check if all NON-LOCKED matches have been predicted
+            var lgc = 0;        //locked games count
+            $scope.games.forEach(function(g){
+                    if(g.locked) lgc++;
+            });
+
+            console.log("Found total of ",lgc," locked games");
+
+            //check total game count = number of selection + locked games
+            if ($scope.games.length != ($scope.selection.length + lgc)) {
                 $scope.predErr = true;
                 return;
             }

@@ -6,6 +6,7 @@
  */
 
 module.exports = {
+    enabled: true,
     host: 'smtp_server_here',
     port: 465,
     user: 'user@email.com',

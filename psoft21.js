@@ -107,7 +107,16 @@ app.get("/api/nextmatch", function (req, res) {
     };
     //Using isActive column to determine which matches are to be shown
     sqlConn.query(
-        "SELECT team1.teamID as t1ID,team1.name as t1Name,team1.group as t1Group, team1.logoURL as t1logoURL, team2.teamID as t2ID,team2.name as t2Name, team2.group as t2Group, team2.logoURL as t2logoURL, match.matchID as matchID, match.isLocked as locked, match.MatchDate as date FROM `match` LEFT JOIN (teams as team1, teams as team2) ON (team1.teamID = `match`.Team1ID AND team2.teamID = `match`.Team2ID) WHERE isActive=1",
+        "SELECT team1.teamID as t1ID,team1.name as t1Name,team1.group as t1Group, team1.logoURL as t1logoURL, " +
+                "team2.teamID as t2ID,team2.name as t2Name, team2.group as t2Group, team2.logoURL as t2logoURL, " +
+                "match.matchID as matchID, " +
+                "match.isLocked as locked, " +
+                "match.MatchDate as date " +
+        "FROM " +
+            "`match` LEFT JOIN (teams as team1, teams as team2) " +
+                    "ON (team1.teamID = `match`.Team1ID AND team2.teamID = `match`.Team2ID) " +
+        "WHERE " +
+            "isActive=1",           //todo: use date calculation fu to figure out which is the list of upcoming matches the same day or next day
         { type: sqlConn.QueryTypes.SELECT })
         .then(function (matches) {
         //fill response object and return
@@ -168,21 +177,22 @@ app.get("/api/getPredictions", function (req, res) {
             query = "SELECT u.userID, u.name,(SELECT Name FROM teams WHERE teamID = p.predictedTeamID) As PredictedTeam,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team1ID) AS team1,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team2ID) AS team2 " + "" +
                         "FROM prediction p, users u, teams t, `match` m " +
                         "WHERE p.playerID = u.userID AND "+
-                        "u.userID = (SELECT userID from users where auth_key = '" + tokenID + "') AND "+
-                        "p.matchID IN (SELECT matchID FROM `match` WHERE isActive =1) AND "+
-                        "p.matchID = m.matchID AND "+
-                        "t.teamID IN (m.Team1ID, m.Team2ID, 50) AND "+
-                        "p.predictedTeamID = t.teamID";
+                            "u.userID = (SELECT userID from users where auth_key = '" + tokenID + "') AND "+
+                            "p.matchID IN (SELECT matchID FROM `match` WHERE isActive =1) AND "+
+                            "p.matchID = m.matchID AND "+
+                            "t.teamID IN (m.Team1ID, m.Team2ID, 50) AND "+
+                            "p.predictedTeamID = t.teamID";
         }
         else {
             //show everyone's predictions
             query = "SELECT u.userID,u.name,(SELECT Name FROM teams WHERE teamID = p.predictedTeamID) As PredictedTeam,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team1ID) AS team1,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team2ID) AS team2 " + "" +
                         "FROM prediction p, users u, teams t, `match` m " +
                         "WHERE p.playerID = u.userID AND "+
-                        "p.matchID IN (SELECT matchID FROM `match` WHERE isActive =1 AND isHidden=0) AND "+
-                        "p.matchID = m.matchID AND "+
-                        "t.teamID IN (m.Team1ID, m.Team2ID, 50) AND "+
-                        "p.predictedTeamID = t.teamID";
+                            "p.matchID IN (SELECT matchID FROM `match` WHERE isActive =1 AND isHidden=0) AND "+
+                            "p.matchID = m.matchID AND "+
+                            "t.teamID IN (m.Team1ID, m.Team2ID, 50) AND "+
+                            "p.predictedTeamID = t.teamID " +
+                        " ORDER BY u.name ASC";
         }
         
         sqlConn.query(query, { type: sqlConn.QueryTypes.SELECT })
@@ -417,7 +427,10 @@ app.post("/api/submitPrediction", function (req, res) {
     var playerFullName = '';
     var playerEmail = '';
 
+    var match_date = '';
     var selectionList = "";             //list of teams selected by user
+
+    var game_locked_message = "Sorry! Prediction for one (or more) game(s) might not have been added because the game was locked. Please refresh your browser to continue with other predictions.";
 
     sqlConn.query(
         "SELECT userID, name, email from users WHERE auth_key = '" + req.body.token + "'",
@@ -436,12 +449,18 @@ app.post("/api/submitPrediction", function (req, res) {
         return Match.find({ where: { matchID: match_id, isLocked: 0 } })
             .then(function (active_rows) {
 
+                //console.log("returning active rows for match:: %o",active_rows);
+
             //check if this match has been locked
             if (active_rows == null) {
 
                 utils.logMe("UserID " + userID + " has tried predicting " + match_id + " after lockdown period. This has been logged!");
-                throw "Sorry, the game has been locked! Prediction is not allowed at this time.";
+                //throw game_locked_message;
+                resObj.message = game_locked_message;
+                resObj.success = false;
+                return resObj;
             }
+                match_date = active_rows.MatchDate;
             //not locked, so prediction change is allowed
             return Prediction
                     .findOrCreate({ where: { playerID: userID, matchID: match_id }, defaults: { predictedTeamID: team_id } })
@@ -494,7 +513,10 @@ app.post("/api/submitPrediction", function (req, res) {
                 //check if this match has been locked
                 if (active_rows == null) {
                     utils.logMe("UserID " + userID + " has tried predicting matchID " + match_id2 + " after lockdown period. This has been logged!");
-                    throw "Sorry, the game has been locked! Prediction is not allowed at this time.";
+                    //throw "Sorry, the game has been locked! Prediction is not allowed at this time.";
+                    resObj.message = game_locked_message;
+                    resObj.success = false;
+                    return resObj;
                 }
                 //not locked, so prediction change is allowed
                 return Prediction
@@ -543,7 +565,10 @@ app.post("/api/submitPrediction", function (req, res) {
                     //check if this match has been locked
                     if (active_rows == null) {
                         utils.logMe("UserID " + userID + " has tried predicting matchID " + match_id3 + " after lockdown period. This has been logged!");
-                        throw "Sorry, the game has been locked! Prediction is not allowed at this time.";
+                        //throw "Sorry, the game has been locked! Prediction is not allowed at this time.";
+                        resObj.message = game_locked_message;
+                        resObj.success = false;
+                        return resObj;
                     }
                     //not locked, so prediction change is allowed
                     return Prediction
@@ -582,7 +607,7 @@ app.post("/api/submitPrediction", function (req, res) {
     })
     .then(function(){
         //notify user via email about submission confirmation
-        utils.sendConfirmation(new Date(),"<p><strong>You have updated your prediction to:</strong></p><ul>" + selectionList + "</ul>", playerFullName, playerEmail);
+        utils.sendConfirmation(match_date,"<p><strong>You have updated your prediction to:</strong></p><ul>" + selectionList + "</ul>", playerFullName, playerEmail);
     })
     .catch(function (err) {
         //utils.logMe("PRED_EXCEPTION::" + err);

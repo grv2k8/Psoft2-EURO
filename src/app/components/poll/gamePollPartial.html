@@ -20,9 +20,10 @@
                             <form>
                                 <div class="col-sm-4">
                                     <div class="panel panel-primary">
-                                        <div class="panel-heading">
+                                        <div class="panel-heading" >
+
                                         </div>
-                                        <div class="panel-body text-center">
+                                        <div class="panel-body text-center" ng-class="{'locked-panel':x.locked}">
                                             <span><img src="{{x.team1LogoPath}}" alt="{{x.team1Name}}"  width="42" height="42" /> </span>
                                             <span>{{x.team1Name}}</span>
                                             <span><input name={{x}} ng-value={{x.team1ID}} type="radio" ng-disabled="x.locked" ng-click="selectTeam(x.matchID,x.team1ID,x.team1Name)"></span>
@@ -31,9 +32,8 @@
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="panel panel-primary">
-                                        <div class="panel-heading">
-                                        </div>
-                                        <div class="panel-body text-center" style="height: 72px; padding-top: 25px;">
+                                        <div class="panel-heading"></div>
+                                        <div class="panel-body text-center" ng-class="{'locked-panel':x.locked}" style="height: 72px; padding-top: 25px;">
                                             <span>DRAW</span>
                                             <span><input name={{x}} ng-value=50 type="radio" ng-disabled="x.locked" ng-click="selectTeam(x.matchID,50,'DRAW')"></span>
                                         </div>
@@ -41,9 +41,8 @@
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="panel panel-primary">
-                                        <div class="panel-heading">
-                                        </div>
-                                        <div class="panel-body text-center">
+                                        <div class="panel-heading"></div>
+                                        <div class="panel-body text-center" ng-class="{'locked-panel':x.locked}">
                                             <div class="pull-right">
                                             <span><input name={{x}} value={{x.team2ID}} type="radio" ng-disabled="x.locked" ng-click="selectTeam(x.matchID, x.team2ID,x.team2Name)"></span>
                                             <span>{{x.team2Name}}</span>

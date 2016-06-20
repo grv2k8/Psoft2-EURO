@@ -10,9 +10,13 @@ body {
 .blocks .btn-primary
 {
 	padding: 12px 50px;
-	border-radius: 1; 
+	border-radius: 1px;
 }
 .blocks {border-spacing: 5px;}
+
+.locked-panel {
+    background-color: #e2e8e8;
+}
 
 .navbar-custom {
     background-color:#394245;
