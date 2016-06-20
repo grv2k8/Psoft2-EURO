@@ -66,6 +66,12 @@ module.exports.sendMessage = function(to, title,message){
 //private email method
 var sendEmail = function(to,title,mbody){
 
+    if((!emailConfig.enabled))
+    {
+        console.log("###NOT SENDING EMAILS BASED ON CONFIG FILE SETTING");
+        return;
+    }
+
     var smtpConfig = {
         host: emailConfig.host,
         port: emailConfig.port,
@@ -93,7 +99,7 @@ var sendEmail = function(to,title,mbody){
             console.log(error);                                                            //does this go (in the future) into a separate verbose.log file?
             return;
         }
-        console.log("Email sent to" , to , "successfully. Info.response =",info.response);       //does this go (in the future) into a separate verbose.log file?
+        console.log("["+getNow()+"] Email sent to" , to , "successfully. Info.response =",info.response);       //does this go (in the future) into a separate verbose.log file?
     });
 };
 
