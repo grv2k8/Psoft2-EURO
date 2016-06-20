@@ -97,6 +97,15 @@ app.get("/api/getLeaderboardScores", function (req, res) {
     gameModule.getScoreBoard(req,res,Users);
 });
 
+//get points for user
+app.get("/api/getUserPoints", function (req, res) {
+    userModule.getUserPoints(req,res,Users);
+});
+
+////////////////////////////////////////////
+///end of modular section
+////////////////////////////////////////////
+
 //return the next match(es) information
 app.get("/api/nextmatch", function (req, res) {
     var resObj = {
@@ -162,10 +171,10 @@ app.get("/api/getPredictions", function (req, res) {
         message: "",
         success: false
     };
-    
+
     var query = "";
     var tokenID = req.query.token;
-    
+
     //check if match is locked, in which case only return current user's prediction
     Match.find({ where: { isActive: 1 } })
         .then(function (active_rows) {
@@ -194,7 +203,7 @@ app.get("/api/getPredictions", function (req, res) {
                             "p.predictedTeamID = t.teamID " +
                         " ORDER BY u.name ASC";
         }
-        
+
         sqlConn.query(query, { type: sqlConn.QueryTypes.SELECT })
             .then(function (predictions) {
                 var team='';
@@ -207,7 +216,7 @@ app.get("/api/getPredictions", function (req, res) {
                         Team: team
                     })
             }
-            //utils.logMe(JSON.stringify(resObj));            
+            //utils.logMe(JSON.stringify(resObj));
             resObj.success = true;
             res.json(resObj);
             res.end();
@@ -374,32 +383,6 @@ app.get("/api/getHistoryByID", function(req,res){
 
 
 })
-
-//get points for user
-app.get("/api/getUserPoints", function (req, res) {
-    var resObj = {
-        score: 0,
-        message: "",
-        success: false
-    };
-    
-    var playerToken = req.query.token;
-
-    sqlConn.query(
-        "SELECT points FROM users WHERE auth_key = '"+playerToken+"'",
-      { type: sqlConn.QueryTypes.SELECT })
-      .then(function (usrScore) {
-        res.setHeader('Content-Type', 'application/json');
-        res.send(JSON.stringify({ score: usrScore[0].points }));
-    })
-      .catch(function (err) {
-        utils.logMe("Error trying to get user score data for token: "+req.query.token+". Details:\n" + err);
-        //get player prediction for upcoming match
-        res.setHeader('Content-Type', 'application/json');
-        res.send(JSON.stringify({ score: -1 }));
-        return;
-    })
-});
 
 //create/update prediction for user
 app.post("/api/submitPrediction", function (req, res) {
@@ -617,7 +600,6 @@ app.post("/api/submitPrediction", function (req, res) {
     })
 
 });
-
 
 app.get("/api/uTestEmail",function(req,res){
     utils.sendConfirmation(new Date(),"You have chosen England as your team","Khal Drogo",'grv2k6@gmail.com');

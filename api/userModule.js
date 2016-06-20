@@ -4,7 +4,7 @@ var utils = require("./PS2Utils.js");
 var exports = module.exports = {};
 
 //API function implementation
-exports.logIn = function (req,res,userModel) {
+exports.logIn = function(req,res,userModel) {
 
     var resObj = {
         usrData: {},
@@ -116,4 +116,97 @@ exports.addUser = function(req,res,userModel){
             res.json(resObj);
             return;
         });
+};
+
+exports.getUserPoints = function(req,res, userModel) {
+
+    var playerToken = req.query.token;
+
+    /*sqlConn.query(
+        "SELECT points FROM users WHERE auth_key = '"+playerToken+"'",
+        { type: sqlConn.QueryTypes.SELECT })*/
+        userModel.findOne({
+            where: {
+                auth_key: playerToken
+            },
+            attributes: ['points']
+        })
+        .then(function (usrScore) {
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify({ score: usrScore.dataValues.points }));
+        })
+        .catch(function (err) {
+            utils.logMe("Error trying to get user score data for token: "+req.query.token+". Details:\n" + err);
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify({ score: -1 }));
+        });
+};
+
+exports.getUserPredictionsDONOTCALLYET = function.(req,res,matchModel){
+    var resObj = {
+        predictData: [],
+        message: "",
+        success: false
+    };
+
+    var query = "";
+    var tokenID = req.query.token;
+
+    //check if match is locked, in which case only return current user's prediction
+    matchModel.find({ where: { isActive: 1 } })
+        .then(function (active_rows) {
+            if (active_rows == null) {
+                return;
+            }
+            if (active_rows.isHidden == 1) {
+                //show only current user's prediction
+                query = "SELECT u.userID, u.name,(SELECT Name FROM teams WHERE teamID = p.predictedTeamID) As PredictedTeam,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team1ID) AS team1,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team2ID) AS team2 " + "" +
+                    "FROM prediction p, users u, teams t, `match` m " +
+                    "WHERE p.playerID = u.userID AND "+
+                    "u.userID = (SELECT userID from users where auth_key = '" + tokenID + "') AND "+
+                    "p.matchID IN (SELECT matchID FROM `match` WHERE isActive =1) AND "+
+                    "p.matchID = m.matchID AND "+
+                    "t.teamID IN (m.Team1ID, m.Team2ID, 50) AND "+
+                    "p.predictedTeamID = t.teamID";
+            }
+            else {
+                //show everyone's predictions
+                query = "SELECT u.userID,u.name,(SELECT Name FROM teams WHERE teamID = p.predictedTeamID) As PredictedTeam,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team1ID) AS team1,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team2ID) AS team2 " + "" +
+                    "FROM prediction p, users u, teams t, `match` m " +
+                    "WHERE p.playerID = u.userID AND "+
+                    "p.matchID IN (SELECT matchID FROM `match` WHERE isActive =1 AND isHidden=0) AND "+
+                    "p.matchID = m.matchID AND "+
+                    "t.teamID IN (m.Team1ID, m.Team2ID, 50) AND "+
+                    "p.predictedTeamID = t.teamID " +
+                    " ORDER BY u.name ASC";
+            }
+
+            sqlConn.query(query, { type: sqlConn.QueryTypes.SELECT })
+                .then(function (predictions) {
+                    var team='';
+                    for (var n = 0; n < predictions.length; n++) {
+                        //if draw has been predicted, show competing teams in brackets (so it's more descriptive for multi-game days)
+                        team = (predictions[n].PredictedTeam === "DRAW")?"DRAW ("+ predictions[n].team1 + " vs " + predictions[n].team2 +")":predictions[n].PredictedTeam;
+                        resObj.predictData.push({
+                            uid: predictions[n].userID,
+                            Name: predictions[n].name,
+                            Team: team
+                        })
+                    }
+                    //utils.logMe(JSON.stringify(resObj));
+                    resObj.success = true;
+                    res.json(resObj);
+                    res.end();
+                    return;
+                })
+                .catch(function (err) {
+                    utils.logMe("Error trying to fill in prediction data. Details:\n" + err);
+                    resObj.success = false;
+                    resObj.message = err;
+                    res.json(resObj);
+                    res.end();
+                    return;
+                })
+        })
+
 };
