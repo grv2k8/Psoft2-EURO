@@ -588,6 +588,58 @@ app.post("/api/submitPrediction", function (req, res) {
         //res.json(resObj);
         //return;
     })
+        .then(function () {
+            if (rows > 3) {
+                //update second game if exists
+                team_id4 = req.body.predObj[3].teamID;
+                match_id4 = req.body.predObj[3].matchID;
+                selectionList = selectionList + "<li><strong>" + req.body.predObj[3].teamName + "</strong></li>";              //add team to selection list
+
+                Match.find({ where: { matchID: match_id4, isLocked: 0 } })
+                    .then(function (active_rows) {
+                        //check if this match has been locked
+                        if (active_rows == null) {
+                            utils.logMe("UserID " + userID + " has tried predicting matchID " + match_id4 + " after lockdown period. This has been logged!");
+                            //throw "Sorry, the game has been locked! Prediction is not allowed at this time.";
+                            resObj.message = game_locked_message;
+                            resObj.success = false;
+                            return resObj;
+                        }
+                        //not locked, so prediction change is allowed
+                        return Prediction
+                            .findOrCreate({ where: { playerID: userID, matchID: match_id4 }, defaults: { predictedTeamID: team_id4 } })
+                            .spread(function (prediction4, created) {
+                                if (!created) {
+                                    //utils.logMe("TEAMID INSIDE findOrCreate is: " + team_id2);
+                                    //utils.logMe("EXISTING prediction object:" + JSON.stringify(prediction2));
+
+                                    //prediction exists; update it
+                                    sqlConn.query(
+                                            "UPDATE prediction SET predictedTeamID=" + team_id4 + " WHERE playerID=" + userID + " AND matchID=" + match_id4,
+                                        { type: sqlConn.QueryTypes.UPDATE })
+                                        .then(function (updated4) {
+                                            utils.logMe("Updated for user " + userID + " for matchID: " + match_id4);
+                                            resObj.success = true;
+                                        })
+                                }
+                                else {
+                                    //new row has been created
+                                    utils.logMe("New row has been created for user " + userID + " for matchID: " + match_id4);
+                                    resObj.success = true;
+                                }
+                            })
+                    })
+                    .catch(function (err) {
+                        //utils.logMe("PRED_EXCEPTION::" + err);
+                        resObj.message = err;
+                        resObj.success = false;
+                        res.json(resObj);
+                        return;
+                    })
+            }
+            //res.json(resObj);
+            //return;
+        })
     .then(function(){
         //notify user via email about submission confirmation
         utils.sendConfirmation(match_date,"<p><strong>You have updated your prediction to:</strong></p><ul>" + selectionList + "</ul>", playerFullName, playerEmail);
