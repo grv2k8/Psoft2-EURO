@@ -142,7 +142,7 @@ exports.getUserPoints = function(req,res, userModel) {
         });
 };
 
-exports.getUserPredictionsDONOTCALLYET = function.(req,res,matchModel){
+exports.getUserPredictionsDONOTCALLYET = function(req,res,matchModel){
     var resObj = {
         predictData: [],
         message: "",
