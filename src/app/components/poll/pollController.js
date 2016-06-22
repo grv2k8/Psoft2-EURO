@@ -20,7 +20,9 @@ Controller that handles
         
         $scope.submitResponseERR = "";
         $scope.showConfirmation = false;
-        
+
+        $scope.msg_announcement = "Please note that starting with the Round of 16, DRAW has been disabled and other players' prediction will be hidden until match is locked";
+
         // $scope.lockDown = false;
         
         //	$scope.isPointsTableLoaded = false;
@@ -183,7 +185,11 @@ Controller that handles
                     return;
                 }
             });
-            
+
+            /*Disable for group of 16 onwards*/
+            if(teamID == 50)
+                return;
+
             if (doAdd) {
                 $scope.selection.push(
                     {
