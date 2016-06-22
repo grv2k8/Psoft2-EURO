@@ -7,6 +7,9 @@
                     <div class="text-center">
                         <h1>Upcoming games</h1>
                     </div>
+                    <div class="alert alert-info alert-dismissable">
+                        <span>{{msg_announcement}}<a class="close" data-dismiss="alert" aria-label="close">&times;</a></span>
+                    </div>
                     <div class="alert alert-success" ng-show="showConfirmation">
                         <span>Thank you. Your results have been submitted</span>
                     </div>
@@ -21,19 +24,17 @@
                                 <div class="col-sm-4">
                                     <div class="panel panel-primary">
                                         <div class="panel-heading" >
-
                                         </div>
-                                        <div class="panel-body text-center" ng-class="{'locked-panel':x.locked}">
-                                            <span><img src="{{x.team1LogoPath}}" alt="{{x.team1Name}}"  width="42" height="42" /> </span>
-                                            <span>{{x.team1Name}}</span>
-                                            <span><input name={{x}} ng-value={{x.team1ID}} type="radio" ng-disabled="x.locked" ng-click="selectTeam(x.matchID,x.team1ID,x.team1Name)"></span>
+                                        <div id = 'divMatch{{x.matchID}}1' style="height: 72px;" class="panel-body text-center" ng-class="{'locked-panel':x.locked}" ng-click="div_click(x.matchID,x.team1ID,x.team1Name)" ng-mouseover="div_hover(x.team1ID)" ng-mouseleave="div_unhover(x.team1ID)">
+                                            <div><img src="{{x.team1LogoPath}}" alt="{{x.team1Name}}"  width="42" height="42" style="padding-right: 10px;"/>{{x.team1Name}} </div>
+
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="panel panel-primary">
                                         <div class="panel-heading"></div>
-                                        <div class="panel-body text-center" ng-class="{'locked-panel':x.locked}" style="height: 72px; padding-top: 25px;">
+                                        <div id = 'divMatch{{x.matchID}}DRAW' class="panel-body text-center" ng-class="{'locked-panel':x.locked}" style="height: 72px; padding-top: 25px;">
                                             <span>DRAW</span>
                                             <span><input name={{x}} ng-value=50 type="radio" ng-disabled="x.locked" ng-click="selectTeam(x.matchID,50,'DRAW')"></span>
                                         </div>

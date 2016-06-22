@@ -20,7 +20,10 @@ Controller that handles
         
         $scope.submitResponseERR = "";
         $scope.showConfirmation = false;
-        
+
+        $scope.msg_announcement = "The voting option has been changed to click on team name instead of radio button selection ";
+
+
         // $scope.lockDown = false;
         
         //	$scope.isPointsTableLoaded = false;
@@ -43,7 +46,7 @@ Controller that handles
                 return false;
             }
         }
-        
+
 /*
         var getPredictionTable = function () {
             
@@ -109,7 +112,7 @@ Controller that handles
                 else {
                     $scope.games = response.data.matchData.slice();		//copy games info to scope
                     $scope.nogames = false;
-                    console.log("Match info returned: %o",response.data.matchData);
+                    //console.log("Match info returned: %o",response.data.matchData);
                 }
                 return;
             })
@@ -196,6 +199,25 @@ Controller that handles
             
             //console.log(angular.toJson($scope.selection, true));
             return;
+        }
+
+        // $scope.poll_div_style = "background-color: #00b3ee";
+
+        $scope.div_hover = function(divName){
+            //$scope.poll_div_style = "background-color: #00b3ee";
+            angular.element(document.querySelector('#divTeam'+divName)).css('background-color','#ccddff');
+            //console.log("Hovered over .." + divName);
+        }
+        $scope.div_unhover = function(divName){
+            //$scope.poll_div_style = "background-color: #ffffff";
+            angular.element(document.querySelector('#divTeam'+divName)).css('background-color','#ffffff');
+            //console.log("Now leaving...");
+        }
+
+        $scope.div_click = function(matchID, teamID, teamName){
+            //clear for draw and other team in this match
+            
+            angular.element(document.querySelector('#divTeam'+divName)).css('background-color','#80aaff');
         }
 
     }
