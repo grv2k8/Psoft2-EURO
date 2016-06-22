@@ -2,11 +2,14 @@
     <div>
         <div class="well" style="overflow: hidden">
             <div class="row">
-                <div class="col-sm-8">
+                 <div class="col-sm-8">
                     <!-- Poll and Prediction column-->
                     <div class="text-center">
                         <h1>Upcoming games</h1>
                     </div>
+                     <div class="alert alert-warning fade in">
+                         <span class="pull">{{msg_announcement}}<a class="close" data-dismiss="alert" aria-label="close">&times;</a></span>
+                     </div>
                     <div class="alert alert-success" ng-show="showConfirmation">
                         <span>Thank you. Your results have been submitted</span>
                     </div>
