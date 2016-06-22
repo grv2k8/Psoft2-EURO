@@ -183,7 +183,11 @@ Controller that handles
                     return;
                 }
             });
-            
+
+            /*Disable for group of 16 onwards*/
+            if(teamID == 50)
+                return;
+
             if (doAdd) {
                 $scope.selection.push(
                     {
