@@ -2,14 +2,14 @@
     <div>
         <div class="well" style="overflow: hidden">
             <div class="row">
-                <div class="col-sm-8">
+                 <div class="col-sm-8">
                     <!-- Poll and Prediction column-->
                     <div class="text-center">
                         <h1>Upcoming games</h1>
                     </div>
-                    <div class="alert alert-info alert-dismissable">
-                        <span>{{msg_announcement}}<a class="close" data-dismiss="alert" aria-label="close">&times;</a></span>
-                    </div>
+                     <div class="alert alert-warning fade in">
+                         <span class="pull">{{msg_announcement}}<a class="close" data-dismiss="alert" aria-label="close">&times;</a></span>
+                     </div>
                     <div class="alert alert-success" ng-show="showConfirmation">
                         <span>Thank you. Your results have been submitted</span>
                     </div>
@@ -31,12 +31,14 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!--Disable for group of 16 onwards-->
                                 <div class="col-sm-4">
                                     <div class="panel panel-primary">
                                         <div class="panel-heading"></div>
-                                        <div id = 'divMatch{{x.matchID}}DRAW' class="panel-body text-center" ng-class="{'locked-panel':x.locked}" style="height: 72px; padding-top: 25px;">
+                                        <div class="panel-body text-center locked-panel" ng-class="{'locked-panel':x.locked}" style="height: 72px; padding-top: 25px;">
                                             <span>DRAW</span>
-                                            <span><input name={{x}} ng-value=50 type="radio" ng-disabled="x.locked" ng-click="selectTeam(x.matchID,50,'DRAW')"></span>
+                                            <!--<span><input name={{x}} ng-value=50 type="radio" ng-disabled="x.locked" ng-click="selectTeam(x.matchID,50,'DRAW')"></span>-->
+                                            <span><input name={{x}} ng-value=50 type="radio" ng-disabled="true" ng-click="selectTeam(x.matchID,50,'DRAW')"></span>
                                         </div>
                                     </div>
                                 </div>

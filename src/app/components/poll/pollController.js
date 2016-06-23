@@ -23,7 +23,6 @@ Controller that handles
 
         $scope.msg_announcement = "The voting option has been changed to click on team name instead of radio button selection ";
 
-
         // $scope.lockDown = false;
         
         //	$scope.isPointsTableLoaded = false;
@@ -186,7 +185,11 @@ Controller that handles
                     return;
                 }
             });
-            
+
+            /*Disable for group of 16 onwards*/
+            if(teamID == 50)
+                return;
+
             if (doAdd) {
                 $scope.selection.push(
                     {
