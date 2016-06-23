@@ -208,19 +208,23 @@ Controller that handles
 
         $scope.div_hover = function(divName){
             //$scope.poll_div_style = "background-color: #00b3ee";
-            angular.element(document.querySelector('#divTeam'+divName)).css('background-color','#ccddff');
+            angular.element(document.querySelector('#divMatch'+divName)).css('background-color','#ccddff');
             //console.log("Hovered over .." + divName);
         }
         $scope.div_unhover = function(divName){
             //$scope.poll_div_style = "background-color: #ffffff";
-            angular.element(document.querySelector('#divTeam'+divName)).css('background-color','#ffffff');
+            angular.element(document.querySelector('#divMatch'+divName)).css('background-color','#ffffff');
             //console.log("Now leaving...");
         }
 
-        $scope.div_click = function(matchID, teamID, teamName){
-            //clear for draw and other team in this match
-            
-            angular.element(document.querySelector('#divTeam'+divName)).css('background-color','#80aaff');
+        $scope.div_click = function(matchID, teamID, teamName,otherTeamID){
+            //clear for other team in this match
+            angular.element(document.querySelector('#divMatch'+matchID+'_'+otherTeamID)).css('background-color','#ffffff');
+
+            angular.element(document.querySelector('#divMatch'+matchID+'_'+teamID)).css('background-color','#80aaff');
+            console.log("Clicked "+'#divMatch'+matchID+'_'+teamID+"; unclicked "+'#divMatch'+matchID+'_'+otherTeamID);
+
+            $scope.selectTeam(matchID,teamID,teamName)
         }
 
     }
