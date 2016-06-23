@@ -132,7 +132,7 @@ Controller that handles
                     if(g.locked) lgc++;
             });
 
-            console.log("Found total of ",lgc," locked games");
+            console.log("Found total of ",lgc," locked games and ",$scope.selection.length," allowed games");
 
             //check total game count = number of selection + locked games
             if ($scope.games.length != ($scope.selection.length + lgc)) {
@@ -217,14 +217,15 @@ Controller that handles
             //console.log("Now leaving...");
         }
 
-        $scope.div_click = function(matchID, teamID, teamName,otherTeamID){
-            //clear for other team in this match
-            angular.element(document.querySelector('#divMatch'+matchID+'_'+otherTeamID)).css('background-color','#ffffff');
+        $scope.div_click = function(matchID, teamID, teamName, otherTeamID, isLocked){
 
-            angular.element(document.querySelector('#divMatch'+matchID+'_'+teamID)).css('background-color','#80aaff');
-            console.log("Clicked "+'#divMatch'+matchID+'_'+teamID+"; unclicked "+'#divMatch'+matchID+'_'+otherTeamID);
-
-            $scope.selectTeam(matchID,teamID,teamName)
+            if(!isLocked) {
+               //clear for other team in this match
+                angular.element(document.querySelector('#divMatch' + matchID + '_' + otherTeamID)).css('background-color', '#ffffff');
+                angular.element(document.querySelector('#divMatch' + matchID + '_' + teamID)).css('background-color', '#80aaff');
+                console.log("Clicked " + '#divMatch' + matchID + '_' + teamID + "; unclicked " + '#divMatch' + matchID + '_' + otherTeamID);
+                $scope.selectTeam(matchID, teamID, teamName);
+            }
         }
 
     }

@@ -21,14 +21,14 @@
                     </div>
                     <div class="col-md-12">
                         <div class="alert alert-info col-sm-3 col-md-offset-5" style="padding-left: 22px;" ng-show="loadingGames">Loading games...<img src="/assets/img/loading.gif"></div>
-                        <div class="row" style="padding-left: 38px; padding-top: 10px; padding-bottom: 20px"><span class="label label-danger" ng-show="predErr">Please make a selection for each game</span></div>
+                        <div class="row" style="padding-left: 38px; padding-top: 10px; padding-bottom: 20px"><span class="label label-danger" ng-show="predErr">Please make a selection for available games</span></div>
                         <!--Game list and voting buttons-->
                         <div class="row" ng-repeat="x in games">
                             <form>
                                 <div class="col-sm-6">
                                     <div class="panel panel-primary">
                                         <div class="panel-heading" >{{x.team1Name}}</div>
-                                        <div id = 'divMatch{{x.matchID}}_{{x.team1ID}}' class="panel-body text-center" ng-class="{'locked-panel':x.locked}" ng-click="div_click(x.matchID,x.team1ID,x.team1Name,x.team2ID)">
+                                        <div id = 'divMatch{{x.matchID}}_{{x.team1ID}}' class="panel-body text-center" ng-class="{'locked-panel':x.locked}" ng-click="div_click(x.matchID,x.team1ID,x.team1Name,x.team2ID,x.locked)">
                                             <div class="row"><img src="{{x.team1LogoPath}}" alt="{{x.team1Name}}"  width="72" height="42" /></div>
 
                                             </div>
@@ -47,7 +47,7 @@
                                 <div class="col-sm-6">
                                     <div class="panel panel-primary">
                                         <div class="panel-heading">{{x.team2Name}}</div>
-                                        <div id = 'divMatch{{x.matchID}}_{{x.team2ID}}' class="panel-body text-center" ng-class="{'locked-panel':x.locked}" ng-click="div_click(x.matchID, x.team2ID,x.team2Name,x.team1ID)">
+                                        <div id = 'divMatch{{x.matchID}}_{{x.team2ID}}' class="panel-body text-center" ng-class="{'locked-panel':x.locked}" ng-click="div_click(x.matchID, x.team2ID,x.team2Name,x.team1ID,x.locked)">
                                             <div class="row"><img src="{{x.team2LogoPath}}" alt="{{x.team2Name}}"  width="72" height="42" /></div>
 
                                         </div>
