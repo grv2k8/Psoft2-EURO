@@ -21,7 +21,7 @@ Controller that handles
         $scope.submitResponseERR = "";
         $scope.showConfirmation = false;
 
-        $scope.msg_announcement = "The voting option has been changed to click on team name instead of radio button selection ";
+        $scope.msg_announcement = "Please note that starting with the Round of 16, DRAW has been disabled and other players' prediction will be hidden until match is locked";
 
         // $scope.lockDown = false;
         
@@ -45,7 +45,7 @@ Controller that handles
                 return false;
             }
         }
-
+        
 /*
         var getPredictionTable = function () {
             
@@ -111,7 +111,7 @@ Controller that handles
                 else {
                     $scope.games = response.data.matchData.slice();		//copy games info to scope
                     $scope.nogames = false;
-                    //console.log("Match info returned: %o",response.data.matchData);
+                    console.log("Match info returned: %o",response.data.matchData);
                 }
                 return;
             })
@@ -200,16 +200,6 @@ Controller that handles
             
             //console.log(angular.toJson($scope.selection, true));
             return;
-        }
-
-        $scope.div_click = function(matchID, teamID, teamName, otherTeamID, isLocked){
-
-            if(!isLocked) {
-               //clear for other team in this match
-                angular.element(document.querySelector('#divMatch' + matchID + '_' + otherTeamID)).css('background-color', '#ffffff');
-                angular.element(document.querySelector('#divMatch' + matchID + '_' + teamID)).css('background-color', '#80d4ff');
-                $scope.selectTeam(matchID, teamID, teamName);
-            }
         }
 
     }
