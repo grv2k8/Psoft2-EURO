@@ -23,6 +23,10 @@
                         <div class="row" style="padding-left: 38px; padding-top: 10px; padding-bottom: 20px"><span class="label label-danger" ng-show="predErr">Please make a selection for available games</span></div>
                         <!--Game list and voting buttons-->
                         <div class="row" ng-repeat="x in games">
+                            <div class="row">
+                                <div class="text-center h5 "><strong>
+                                    <p ng-bind="x.date | date:'shortTime'"></p><span>(LOCKED)</span>
+                                </strong></div></div>
                             <div class="col-sm-6">
                                 <div class="panel panel-primary">
                                     <div class="panel-heading" >{{x.team1Name}}</div>
