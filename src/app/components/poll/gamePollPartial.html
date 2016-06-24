@@ -1,5 +1,4 @@
 <div class="container">
-    <div>
         <div class="well" style="overflow: hidden">
             <div class="row">
                  <div class="col-sm-8">
@@ -7,7 +6,10 @@
                     <div class="text-center">
                         <h1>Upcoming games</h1>
                     </div>
-                     <div class="alert alert-warning fade in">
+                    <div class="alert alert-info fade in">
+                         <span class="pull">Please note that starting with the Round of 16, DRAW has been disabled and other players' prediction will be hidden until match is locked<a class="close" data-dismiss="alert" aria-label="close">&times;</a></span>
+                     </div>
+                    <div class="alert alert-warning fade in">
                          <span class="pull">{{msg_announcement}}<a class="close" data-dismiss="alert" aria-label="close">&times;</a></span>
                      </div>
                     <div class="alert alert-success" ng-show="showConfirmation">
@@ -18,70 +20,63 @@
                     </div>
                     <div class="col-md-12">
                         <div class="alert alert-info col-sm-3 col-md-offset-5" style="padding-left: 22px;" ng-show="loadingGames">Loading games...<img src="/assets/img/loading.gif"></div>
-                        <div class="row" style="padding-left: 38px; padding-top: 10px; padding-bottom: 20px"><span class="label label-danger" ng-show="predErr">Please make a selection for each game</span></div>
+                        <div class="row" style="padding-left: 38px; padding-top: 10px; padding-bottom: 20px"><span class="label label-danger" ng-show="predErr">Please make a selection for available games</span></div>
+                        <!--Game list and voting buttons-->
                         <div class="row" ng-repeat="x in games">
-                            <form>
-                                <div class="col-sm-4">
-                                    <div class="panel panel-primary">
-                                        <div class="panel-heading" >
+                            <div class="col-sm-6">
+                                <div class="panel panel-primary">
+                                    <div class="panel-heading" >{{x.team1Name}}</div>
+                                    <div id = 'divMatch{{x.matchID}}_{{x.team1ID}}' class="panel-body text-center" ng-class="{'locked-panel':x.locked}" ng-click="div_click(x.matchID,x.team1ID,x.team1Name,x.team2ID,x.locked)">
+                                        <div class="row"><img src="{{x.team1LogoPath}}" alt="{{x.team1Name}}"  width="72" height="42" /></div>
 
                                         </div>
-                                        <div class="panel-body text-center" ng-class="{'locked-panel':x.locked}">
-                                            <span><img src="{{x.team1LogoPath}}" alt="{{x.team1Name}}"  width="42" height="42" /> </span>
-                                            <span>{{x.team1Name}}</span>
-                                            <span><input name={{x}} ng-value={{x.team1ID}} type="radio" ng-disabled="x.locked" ng-click="selectTeam(x.matchID,x.team1ID,x.team1Name)"></span>
-                                        </div>
+                                </div>
+                            </div>
+                            <!--Disable for group of 16 onwards--><!--
+                           <div class="col-sm-4">
+                                <div class="panel panel-primary">
+                                    <div class="panel-heading"></div>
+                                    <div id = 'divMatch{{x.matchID}}_50' class="panel-body text-center locked-panel" style="height: 92px;;" ng-class="{'locked-panel':x.locked}">
+                                        <div class="row"></div>
+                                        <div class="row">DRAW</div>
                                     </div>
                                 </div>
-                                <!--Disable for group of 16 onwards-->
-                                <div class="col-sm-4">
-                                    <div class="panel panel-primary">
-                                        <div class="panel-heading"></div>
-                                        <div class="panel-body text-center locked-panel" ng-class="{'locked-panel':x.locked}" style="height: 72px; padding-top: 25px;">
-                                            <span>DRAW</span>
-                                            <!--<span><input name={{x}} ng-value=50 type="radio" ng-disabled="x.locked" ng-click="selectTeam(x.matchID,50,'DRAW')"></span>-->
-                                            <span><input name={{x}} ng-value=50 type="radio" ng-disabled="true" ng-click="selectTeam(x.matchID,50,'DRAW')"></span>
-                                        </div>
+                            </div>-->
+                            <div class="col-sm-6">
+                                <div class="panel panel-primary">
+                                    <div class="panel-heading">{{x.team2Name}}</div>
+                                    <div id = 'divMatch{{x.matchID}}_{{x.team2ID}}' class="panel-body text-center" ng-class="{'locked-panel':x.locked}" ng-click="div_click(x.matchID, x.team2ID,x.team2Name,x.team1ID,x.locked)">
+                                        <div class="row"><img src="{{x.team2LogoPath}}" alt="{{x.team2Name}}"  width="72" height="42" /></div>
+
                                     </div>
                                 </div>
-                                <div class="col-sm-4">
-                                    <div class="panel panel-primary">
-                                        <div class="panel-heading"></div>
-                                        <div class="panel-body text-center" ng-class="{'locked-panel':x.locked}">
-                                            <div class="pull-right">
-                                            <span><input name={{x}} value={{x.team2ID}} type="radio" ng-disabled="x.locked" ng-click="selectTeam(x.matchID, x.team2ID,x.team2Name)"></span>
-                                            <span>{{x.team2Name}}</span>
-                                            <span><img src="{{x.team2LogoPath}}" alt="{{x.team2Name}}"  width="42" height="42" /> </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-                            <br />
+                            </div>
                         </div>
-                        <div ng-hide="nogames || loadingGames" class="col-sm-4 col-md-offset-4">
-                            <button class="btn btn-lg btn-primary btn-block" type="submit" ng-click="submitPoll()">Submit</button>
+                        <div ng-show="nogames" style="padding-bottom: 40px;" class="col-sm-8 col-md-offset-3">
+                            <span >There are currently no active games available</span>
                         </div>
-                        <div style="padding-bottom: 40px" class="col-sm-8 col-md-offset-3">
-                            <span ng-show="nogames">There are currently no active games available</span>
+                        <div ng-hide="nogames || loadingGames" class="col-md-12">
+                            <div class="col-sm-4"></div>
+                            <div class="col-sm-4"><button class="btn btn-lg btn-primary btn-block" type="submit" ng-click="submitPoll()">Submit</button>
+                            <div class="col-sm-4"></div>
                         </div>
                     </div>
-                    <div ng-show="lockDown" class="alert alert-success">
-                        <div>NOTE: Predictions from other players will be visible after prediction lockdown for semifinals and finals</div>
-                    </div>
-                    <div ng-hide="nogames">
+                    <!--<div ng-show="lockDown" class="alert alert-success">-->
+                        <!--<div>NOTE: Predictions from other players will be visible after prediction lockdown for semifinals and finals</div>-->
+                    <!--</div>-->
+                    <div>&nbsp;</div>
+                    <div style="padding-top: 20px;" ng-hide="nogames">
                         <div ng-controller="predListController">
                             <h3>Prediction list</h3>
                             <div ui-grid="predictionGrid"></div>
                         </div>
                     </div>
+                    </div>
                 </div>
-                <div class="col-sm-4">
+                 <div class="col-sm-4">
                     <!-- Leaderboard column -->
                     <div>
-                        <div class="text-center">
-                            <h1>Scoreboard</h1>
-                        </div>
+                        <div class="text-center"><h1>Scoreboard</h1></div>
                         <div ng-controller="scoreboardController">
                             <div ui-grid="scoreGrid"></div>
                         </div>
@@ -89,4 +84,4 @@
                 </div>
             </div>
         </div>
-    </div>
+</div>
