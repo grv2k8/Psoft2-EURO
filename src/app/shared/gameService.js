@@ -7,6 +7,7 @@ angular.module("psoft2UI").service("gameService", function ($http) {
 
     var predictionGrid = {
         enableColumnMenus: false,
+        minRowsToShow: 17,
         columnDefs: [
             { field: 'href',
                 displayName: 'Name',

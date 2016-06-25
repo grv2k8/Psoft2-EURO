@@ -5,9 +5,9 @@ Controller that handles
 */
 (function () {
     angular.module("psoft2UI").controller("pollController", pollCtrl);
-    pollCtrl.$inject = ['$scope', '$location', 'userService', 'authService', 'gameService'];
+    pollCtrl.$inject = ['$scope', '$location', 'userService', 'authService', 'gameService', '$timeout'];
     
-    function pollCtrl($scope, $location, userService, authService, gameService) {
+    function pollCtrl($scope, $location, userService, authService, gameService, $timeout) {
         
         $scope.games = [];
         $scope.selection = [];				//array of {usrID, matchID, teamID} objects			
@@ -164,9 +164,11 @@ Controller that handles
                     return;
                 })
             .then(function(){
-                //refresh prediction grid
+
                 $scope.predictionGridLoaded = false;
-                gameService.getPredictionList($scope.user_token)
+                //wait for 3 seconds (to allow all updates) and refresh prediction grid
+                $timeout(function(){
+                    gameService.getPredictionList($scope.user_token)
                     .then(function (response) {
                         if (response == null) {
                             throw "There was an error trying to fetch prediction data from the web service. Please try again later";
@@ -178,6 +180,7 @@ Controller that handles
                         gameService.fillPredictionGrid(response.data.predictData);      //for dynamic refreshing of prediction grid
                         $scope.predictionGridLoaded = true;
                     })
+                },3000);
             })
 			.catch(function (err) {
                     $scope.message = err;
@@ -221,7 +224,6 @@ Controller that handles
             //console.log(angular.toJson($scope.selection, true));
             return;
         }
-
 
         $scope.div_click = function(matchID, teamID, teamName, otherTeamID, isLocked){
 

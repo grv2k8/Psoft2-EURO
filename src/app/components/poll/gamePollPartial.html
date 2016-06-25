@@ -1,10 +1,11 @@
 <div class="container">
         <div class="well" style="overflow: hidden">
             <div class="row">
-                 <div class="col-sm-8">
+                <!--Teams and poll button DIVs-->
+                <div class="col-sm-12">
                     <!-- Poll and Prediction column-->
                     <div class="text-center">
-                        <h1>Upcoming games</h1>
+                        <div class="h1">Upcoming games</div>
                         <div class="h4">(ROUND OF 16)</div>
                     </div>
                     <div class="alert alert-warning fade in" ng-show="display_announcement">
@@ -72,19 +73,24 @@
                         <!--<div>NOTE: Predictions from other players will be visible after prediction lockdown for semifinals and finals</div>-->
                     <!--</div>-->
                     <div>&nbsp;</div>
-                    <div style="padding-top: 20px;" ng-hide="nogames">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <!--Prediction List-->
+                <div class="col-sm-8">
+                    <div ng-hide="nogames">
                         <div ng-controller="predListController">
-                            <h3>Prediction list</h3>
+                            <div class="h1">Prediction list</div>
                             <div ng-hide="predictionGridLoaded"><span class="h5"><img src="/assets/img/loading.gif" /> Refreshing...</span></div>
                             <div ng-show="predictionGridLoaded" ui-grid="predictionGrid"></div>
                         </div>
                     </div>
-                    </div>
                 </div>
-                 <div class="col-sm-4">
+                <div class="col-sm-4">
                     <!-- Leaderboard column -->
                     <div>
-                        <div class="text-center"><h1>Scoreboard</h1></div>
+                        <div class="text-center h1">Scoreboard</div>
                         <div ng-controller="scoreboardController">
                             <div ui-grid="scoreGrid"></div>
                         </div>
