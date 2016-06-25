@@ -181,28 +181,23 @@ app.get("/api/getPredictions", function (req, res) {
         if (active_rows == null) {
             return;
         }
-        if (active_rows.isHidden == 1) {
-            //show only current user's prediction
-            query = "SELECT u.userID, u.name,(SELECT Name FROM teams WHERE teamID = p.predictedTeamID) As PredictedTeam,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team1ID) AS team1,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team2ID) AS team2 " + "" +
-                        "FROM prediction p, users u, teams t, `match` m " +
-                        "WHERE p.playerID = u.userID AND "+
-                            "u.userID = (SELECT userID from users where auth_key = '" + tokenID + "') AND "+
-                            "p.matchID IN (SELECT matchID FROM `match` WHERE isActive =1) AND "+
-                            "p.matchID = m.matchID AND "+
-                            "t.teamID IN (m.Team1ID, m.Team2ID, 50) AND "+
-                            "p.predictedTeamID = t.teamID";
-        }
-        else {
-            //show everyone's predictions
-            query = "SELECT u.userID,u.name,(SELECT Name FROM teams WHERE teamID = p.predictedTeamID) As PredictedTeam,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team1ID) AS team1,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team2ID) AS team2 " + "" +
-                        "FROM prediction p, users u, teams t, `match` m " +
-                        "WHERE p.playerID = u.userID AND "+
-                            "p.matchID IN (SELECT matchID FROM `match` WHERE isActive =1 AND isHidden=0) AND "+
-                            "p.matchID = m.matchID AND "+
-                            "t.teamID IN (m.Team1ID, m.Team2ID, 50) AND "+
-                            "p.predictedTeamID = t.teamID " +
-                        " ORDER BY u.name ASC";
-        }
+
+        //union query to show all predictions by player, along with other unhidden predictions
+        query = "SELECT u.userID, u.name,(SELECT Name FROM teams WHERE teamID = p.predictedTeamID) As PredictedTeam, " +
+                    "(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team1ID) AS team1, " +
+                    "(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team2ID) AS team2 " +
+                "FROM prediction p, users u, teams t, `match` m " +
+                "WHERE p.playerID = u.userID AND u.userID = (SELECT userID from users where auth_key = '" + tokenID + "') AND " +
+                    "p.matchID IN (SELECT matchID FROM `match` WHERE isActive =1) AND p.matchID = m.matchID AND " +
+                    "t.teamID IN (m.Team1ID, m.Team2ID, 50) AND p.predictedTeamID = t.teamID " +
+                "UNION ALL " +
+                "SELECT u2.userID, u2.name, (SELECT Name FROM teams WHERE teamID = p2.predictedTeamID) AS PredictedTeam, " +
+                    "(SELECT teams.Name FROM teams WHERE teams.teamID = m2.Team1ID) AS team1," +
+                    "(SELECT teams.Name FROM teams WHERE teams.teamID = m2.Team2ID) AS team2 " +
+                "FROM prediction p2, users u2, teams t2, `match` m2 " +
+                "WHERE p2.playerID = u2.userID AND p2.matchID IN (SELECT matchID FROM `match` WHERE isActive =1 AND isHidden=0) AND " +
+                    "p2.matchID = m2.matchID AND t2.teamID IN (m2.Team1ID, m2.Team2ID, 50) AND " +
+                    "u2.auth_key <> '" + tokenID + "' AND p2.predictedTeamID = t2.teamID";
 
         sqlConn.query(query, { type: sqlConn.QueryTypes.SELECT })
             .then(function (predictions) {
