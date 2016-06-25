@@ -10,7 +10,8 @@ Controller that retrieves prediction list for current match from submitted entri
 
         $scope.lockDown = false;
         $scope.user_token = authService.getToken();
-        $scope.predictionGrid = {
+        $scope.predictionGrid = gameService.getPredictionGrid();
+        /*$scope.predictionGrid = {
             enableColumnMenus: false,
             columnDefs: [
                 { field: 'href',
@@ -20,7 +21,7 @@ Controller that retrieves prediction list for current match from submitted entri
                 { field: 'Team',
                     displayName: 'Predicted Team'
                 }]
-        };
+        };*/
 
         //quick hack for semi and finals:
         if ($scope.lockDown) {
@@ -43,7 +44,8 @@ Controller that retrieves prediction list for current match from submitted entri
                 if (response.data.predictData.length == 1) {
                     $scope.lockDown = true;
                 }
-                $scope.predictionGrid.data = response.data.predictData;
+                //$scope.predictionGrid.data = response.data.predictData;
+                gameService.fillPredictionGrid(response.data.predictData);      //for dynamic refreshing of prediction grid
             })
             .catch(function (err) {
                 console.error("Unable to fetch prediction table. Details:\n" + err);

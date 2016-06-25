@@ -24,6 +24,9 @@ Controller that handles
         $scope.msg_announcement = "Please note that starting with the Round of 16, DRAW has been disabled and other players' prediction will be hidden until match is locked";
         $scope.display_announcement = true;            //TODO: move these to config/exports file
 
+
+        $scope.predictionGridLoaded = true;
+
         // $scope.lockDown = false;
         
         //	$scope.isPointsTableLoaded = false;
@@ -160,6 +163,22 @@ Controller that handles
                     //$location.path("/poll");
                     return;
                 })
+            .then(function(){
+                //refresh prediction grid
+                $scope.predictionGridLoaded = false;
+                gameService.getPredictionList($scope.user_token)
+                    .then(function (response) {
+                        if (response == null) {
+                            throw "There was an error trying to fetch prediction data from the web service. Please try again later";
+                        }
+                        if (!response.data.success) { throw response.data.message; }
+                        //console.log(angular.toJson(response.data));
+
+                        //$scope.predictionGrid.data = response.data.predictData;
+                        gameService.fillPredictionGrid(response.data.predictData);      //for dynamic refreshing of prediction grid
+                        $scope.predictionGridLoaded = true;
+                    })
+            })
 			.catch(function (err) {
                     $scope.message = err;
                     $scope.is_valid = false;

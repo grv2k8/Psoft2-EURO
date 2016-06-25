@@ -5,24 +5,31 @@ grjoshi 3/30/2016
 
 angular.module("psoft2UI").service("gameService", function ($http) {
 
-/*
-
     var predictionGrid = {
-        columnDefs: [{ field: 'Name', displayName: 'Name' },
-            { field: 'Team', displayName: 'Predicted Team' }],
-        data:{}
+        enableColumnMenus: false,
+        columnDefs: [
+            { field: 'href',
+                displayName: 'Name',
+                cellTemplate: '<div class="ngCellText"><a href="/src/index.html#/profile?id={{row.entity.uid}}">{{row.entity.Name}}</a></div>'
+            },
+            { field: 'Team',
+                displayName: 'Predicted Team'
+            }]
+    };
+    
+
+    this.fillPredictionGrid = function(pred_data){
+        predictionGrid.data = pred_data;
     };
 
-    this.refreshPredictions = function(){
-
+    this.getPredictionGrid = function(){
+        return predictionGrid;
     }
-
-*/
 
     this.getNextGame = function () {
         var promise = $http.get("/api/nextmatch");
         return promise;
-    }
+    };
     
     this.submitPrediction = function (usr_token, predObj) {
         
@@ -34,25 +41,25 @@ angular.module("psoft2UI").service("gameService", function ($http) {
         //console.log("SENDINGG..." + angular.toJson(data, true));
         var promise = $http.post("/api/submitPrediction", data);
         return promise;
-    }
+    };
     
     this.showNextGamePredictions = function () {
         var promise = $http.get("/api/getPredictions");
         return promise;
-    }
+    };
     
     this.getLeaderboardScores = function () {
         var promise = $http.get("/api/getLeaderboardScores");
         return promise;
-    }
+    };
     
     this.getPredictionList = function (user_token) {
         var promise = $http.get("/api/getPredictions?token=" + user_token);
         return promise;
-    }
+    };
     
     this.checkIfUserPredicted = function (user_token) {
         var promise = $http.get("/api/checkIfPredicted?token=" + user_token);
         return promise;
-    }
+    };
 });
