@@ -21,7 +21,8 @@ Controller that handles
         $scope.submitResponseERR = "";
         $scope.showConfirmation = false;
 
-        $scope.msg_announcement = "The voting option has been changed to click on team name instead of radio button selection ";
+        $scope.msg_announcement = "Please note that starting with the Round of 16, DRAW has been disabled and other players' prediction will be hidden until match is locked";
+        $scope.display_announcement = true;            //TODO: move these to config/exports file
 
         // $scope.lockDown = false;
         

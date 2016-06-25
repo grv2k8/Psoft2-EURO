@@ -5,11 +5,9 @@
                     <!-- Poll and Prediction column-->
                     <div class="text-center">
                         <h1>Upcoming games</h1>
+                        <div class="h4">(ROUND OF 16)</div>
                     </div>
-                    <div class="alert alert-info fade in">
-                         <span class="pull">Please note that starting with the Round of 16, DRAW has been disabled and other players' prediction will be hidden until match is locked<a class="close" data-dismiss="alert" aria-label="close">&times;</a></span>
-                     </div>
-                    <div class="alert alert-warning fade in">
+                    <div class="alert alert-warning fade in" ng-show="display_announcement">
                          <span class="pull">{{msg_announcement}}<a class="close" data-dismiss="alert" aria-label="close">&times;</a></span>
                      </div>
                     <div class="alert alert-success" ng-show="showConfirmation">
@@ -22,11 +20,16 @@
                         <div class="alert alert-info col-sm-3 col-md-offset-5" style="padding-left: 22px;" ng-show="loadingGames">Loading games...<img src="/assets/img/loading.gif"></div>
                         <div class="row" style="padding-left: 38px; padding-top: 10px; padding-bottom: 20px"><span class="label label-danger" ng-show="predErr">Please make a selection for available games</span></div>
                         <!--Game list and voting buttons-->
+                        <div class="row h3 text-center">Games for {{games[0].date | date:'MMM d, yyyy'}}</div>
                         <div class="row" ng-repeat="x in games">
+
                             <div class="row">
-                                <div class="text-center h5 "><strong>
-                                    <p ng-bind="x.date | date:'shortTime'"></p><span>(LOCKED)</span>
-                                </strong></div></div>
+                                <div class="text-center h5 ">
+                                    <strong>
+                                        <span ng-bind="(x.date | date:'shortTime') +' '"></span><span ng-show="{{x.locked}}"  style="color:#ff4d4d;">(LOCKED)</span>
+                                    </strong>
+                                </div>
+                            </div>
                             <div class="col-sm-6">
                                 <div class="panel panel-primary">
                                     <div class="panel-heading" >{{x.team1Name}}</div>
