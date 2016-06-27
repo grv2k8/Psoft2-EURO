@@ -274,12 +274,27 @@ app.get("/api/getHistory", function (req, res) {
     };
     
     var playerToken = req.query.token;
-    
-    sqlConn.query(
-        "SELECT m.MatchDate as match_date,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team1ID) as team1,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team2ID) as team2,(SELECT teams.Name FROM teams WHERE teams.teamID = p.predictedTeamID) as predicted_team,(SELECT teams.Name FROM teams WHERE teams.teamID = m.WinningTeamID) as winning_team FROM prediction p, users u, teams t, `match` m where p.playerID = (SELECT userID FROM users WHERE auth_key = '" + playerToken + "' ) and u.userid = p.playerID and t.teamID = p.predictedTeamID and m.matchID = p.matchID and m.isActive=0",
-  { type: sqlConn.QueryTypes.SELECT })
+    var historyQuery = "SELECT " +
+        "m.MatchDate as match_date," +
+        "m.pointsDelta as game_weight, " +
+        "(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team1ID) as team1," +
+        "(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team2ID) as team2," +
+        "(SELECT teams.Name FROM teams WHERE teams.teamID = p.predictedTeamID) as predicted_team," +
+        "(SELECT teams.Name FROM teams WHERE teams.teamID = m.WinningTeamID) as winning_team " +
+        "FROM " +
+        "prediction p, users u, teams t, `match` m " +
+        "WHERE " +
+        "p.playerID = (SELECT userID FROM users WHERE auth_key = '" + playerToken + "' ) AND " +
+        "u.userid = p.playerID AND " +
+        "t.teamID = p.predictedTeamID AND " +
+        "m.matchID = p.matchID AND " +
+        "m.isActive=0";
+
+    //console.log(query);
+
+    sqlConn.query(historyQuery,{ type: sqlConn.QueryTypes.SELECT })
     .then(function (matches) {
-        
+
         //fill response object and return
         resObj.success = true;
         resObj.count = matches.length;
@@ -293,6 +308,7 @@ app.get("/api/getHistory", function (req, res) {
                 matchDate: matches[n].match_date,
                 predictedTeam: matches[n].predicted_team,
                 winningTeam: matches[n].winning_team,
+                points: matches[n].game_weight,
                 result: outcome
             });
         }
@@ -324,23 +340,25 @@ app.get("/api/getHistoryByID", function(req,res){
     };
 
     var playerID = req.query.userID;
-
-    sqlConn.query(
+    var historyIDQuery =
         "SELECT " +
             "u.name as player_name, " +
             "u.points as player_points, " +
             "m.MatchDate AS match_date," +
-            "(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team1ID) AS team1,(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team2ID) AS team2," +
-            "(SELECT teams.Name FROM teams WHERE teams.teamID = p.predictedTeamID) AS predicted_team,(SELECT teams.Name FROM teams WHERE teams.teamID = m.WinningTeamID) AS winning_team " +
-        "FROM " +
-            "prediction p,users u,teams t,`match` m " +
+            "m.pointsDelta AS game_weight," +
+            "(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team1ID) AS team1," +
+            "(SELECT teams.Name FROM teams WHERE teams.teamID = m.Team2ID) AS team2," +
+            "(SELECT teams.Name FROM teams WHERE teams.teamID = p.predictedTeamID) AS predicted_team," +
+            "(SELECT teams.Name FROM teams WHERE teams.teamID = m.WinningTeamID) AS winning_team " +
+        "FROM prediction p,users u,teams t,`match` m " +
         "WHERE " +
             "p.playerID = " + playerID + " AND " +
             "u.userid = p.playerID AND " +
             "teamID = p.predictedTeamID AND " +
             "m.matchID = p.matchID AND " +
-            "m.isActive=0 AND m.isLocked=1 AND m.isHidden=0",
-        { type: sqlConn.QueryTypes.SELECT })
+            "m.isActive=0 AND m.isLocked=1 AND m.isHidden=0";
+
+    sqlConn.query(historyIDQuery,{ type: sqlConn.QueryTypes.SELECT })
         .then(function (matches) {
 
             //fill response object and return
@@ -359,6 +377,7 @@ app.get("/api/getHistoryByID", function(req,res){
                     matchDate: matches[n].match_date,
                     predictedTeam: matches[n].predicted_team,
                     winningTeam: matches[n].winning_team,
+                    points: matches[n].game_weight,
                     result: outcome
                 });
             }
