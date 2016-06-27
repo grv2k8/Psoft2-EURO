@@ -6,7 +6,7 @@
                     <!-- Poll and Prediction column-->
                     <div class="text-center">
                         <div class="h1">Upcoming games</div>
-                        <div class="h4">(ROUND OF 16)</div>
+                        <div class="h4">(Quarter Finals)</div>
                     </div>
                     <div class="alert alert-warning fade in" ng-show="display_announcement">
                          <span class="pull">{{msg_announcement}}<a class="close" data-dismiss="alert" aria-label="close">&times;</a></span>
@@ -22,6 +22,7 @@
                         <div class="row" style="padding-left: 38px; padding-top: 10px; padding-bottom: 20px"><span class="label label-danger" ng-show="predErr">Please make a selection for available games</span></div>
                         <!--Game list and voting buttons-->
                         <div class="row h3 text-center">Games for {{games[0].date | date:'MMM d, yyyy'}}</div>
+                        <div class="row h5 text-center">(9 points each)</div>
                         <div class="row" ng-repeat="x in games">
 
                             <div class="row">

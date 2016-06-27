@@ -21,7 +21,7 @@ Controller that handles
         $scope.submitResponseERR = "";
         $scope.showConfirmation = false;
 
-        $scope.msg_announcement = "Please note that starting with the Round of 16, DRAW has been disabled and other players' prediction will be hidden until match is locked";
+        $scope.msg_announcement = "Predictions from other players will be hidden until 15 minutes before the match";
         $scope.display_announcement = true;            //TODO: move these to config/exports file
 
 
