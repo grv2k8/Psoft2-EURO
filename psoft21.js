@@ -308,7 +308,7 @@ app.get("/api/getHistory", function (req, res) {
                 matchDate: matches[n].match_date,
                 predictedTeam: matches[n].predicted_team,
                 winningTeam: matches[n].winning_team,
-                points: matches[n].game_weight,
+                points: (matches[n].predicted_team === matches[n].winning_team)?(matches[n].game_weight):0,
                 result: outcome
             });
         }
@@ -377,7 +377,7 @@ app.get("/api/getHistoryByID", function(req,res){
                     matchDate: matches[n].match_date,
                     predictedTeam: matches[n].predicted_team,
                     winningTeam: matches[n].winning_team,
-                    points: matches[n].game_weight,
+                    points: (matches[n].predicted_team === matches[n].winning_team)?(matches[n].game_weight):0,
                     result: outcome
                 });
             }
