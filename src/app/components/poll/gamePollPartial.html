@@ -82,7 +82,7 @@
                 <div class="col-sm-8">
                     <div ng-hide="nogames">
                         <div ng-controller="predListController">
-                            <div class="h1">Prediction list</div>
+                            <div class="h1">Prediction list<span ng-show="matchDateTime" class="h5" style="padding-left: 10px;;">(Unlocked in <timer end-time='matchDateTime'>{{days}} days, {{hours}} hours, {{minutes}} minutes, {{seconds}} seconds</timer>)</span> </div>
                             <div ng-hide="predictionGridLoaded"><span class="h5"><img src="/assets/img/loading.gif" /> Refreshing...</span></div>
                             <div ng-show="predictionGridLoaded" ui-grid="predictionGrid"></div>
                         </div>

@@ -21,11 +21,13 @@ Controller that handles
         $scope.submitResponseERR = "";
         $scope.showConfirmation = false;
 
-        $scope.msg_announcement = "Predictions from other players will be hidden until 15 minutes before the match";
+        $scope.msg_announcement = "Predictions from other players will be revealed 15 minutes before the match";
         $scope.display_announcement = true;            //TODO: move these to config/exports file
 
 
         $scope.predictionGridLoaded = true;
+
+        $scope.matchDateTime = '';
 
         // $scope.lockDown = false;
         
@@ -115,7 +117,11 @@ Controller that handles
                 else {
                     $scope.games = response.data.matchData.slice();		//copy games info to scope
                     $scope.nogames = false;
-                    
+
+                    var targetDateMsec = new Date($scope.games[0].date).getTime() -  15*60000;
+
+                    $scope.matchDateTime = (targetDateMsec > 0) ? (new Date($scope.games[0].date).getTime() - 15 * 60000) : '';       //get 15 min prior to match time in msec
+
                 }
                 return;
             })

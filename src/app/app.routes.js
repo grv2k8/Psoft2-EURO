@@ -1,4 +1,4 @@
-angular.module("psoft2UI",['ngRoute','angular-md5','ui.grid'])
+angular.module("psoft2UI",['ngRoute','angular-md5','ui.grid','timer'])
 	.config(function($routeProvider){
 		$routeProvider
 			.when('/poll',{
