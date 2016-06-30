@@ -741,28 +741,62 @@ app.get("/api/adminUpdateScores", function (req, res) {
     
     //check if admin user
     sqlConn.query(
-        "SELECT * FROM users WHERE auth_key = '" + playerToken + "' AND isAdmin = 1",
+        "SELECT userID FROM users WHERE auth_key = '" + playerToken + "' AND isAdmin = 1",
         { type: sqlConn.QueryTypes.SELECT })
         .then(function (isAdmin) { 
-            
-        if (!isAdmin) {
-            //not an admin
-            resObj.message = "Specified user is not an admin";
-            resObj.success = false;
-            res.json(resObj);
-            res.end();
-        }
+            utils.logMe(JSON.stringify(isAdmin));
 
-        //TODO:: success....now update the scores list
-        utils.logMe("This is where teamID " + winningTeamID + " is to be updated as winner for matchID " + matchID + ", and score will be incremented by " + scoreIncBy);
-    })
-      .catch(function (err) {
+            //if not an admin
+            if (isAdmin.length == 0) {
+                //not an admin
+                resObj.message = "Specified user is not an admin";
+                resObj.success = false;
+                res.json(resObj);
+                res.end();
+                return;
+            }
+
+            //TODO: check condition to make sure match hasn't already been updated...
+
+            //increment user points for all correct predictions
+            sqlConn.query(
+                "UPDATE users " +
+                "SET POINTS = POINTS + " + scoreIncBy + " " +
+                "WHERE userID IN " +
+                "(SELECT p.playerID FROM prediction p WHERE p.matchID = " + matchID + " AND p.predictedTeamID = " + winningTeamID + ")",
+                {type: sqlConn.QueryTypes.UPDATE })
+                .then(function(){
+                   //also update match table
+                    sqlConn.query(
+                        "UPDATE `match` " +
+                        "SET WinningTeamID = " + winningTeamID + "," +
+                        "   isActivea a= 0 " +
+                        "WHERE matchID = " + matchID,
+                        {type: sqlConn.QueryTypes.UPDATE })
+                        .then(function(){
+                            resObj.success = true;
+                            res.json(resObj);
+                            res.end();
+                        })
+                        .catch(function(upd_err){
+                            throw upd_err;
+                        })
+                })
+                .catch(function(upd_err){
+                    utils.logMe("Error trying to update scores for user " + req.query.token + ". Details:\n" + upd_err);
+                    resObj.message = "Error trying to update scores. Details: "+upd_err;
+                    resObj.success = false;
+                    res.json(resObj);
+                    res.end();
+            })
+        })
+        .catch(function (err) {
         utils.logMe("Error trying to update scores for user " + req.query.token + ". Details:\n" + err);
         resObj.message = "Error trying to update scores. Details: "+err;
         resObj.success = false;
         res.json(resObj);
         res.end();
-        return;
+
     })
 })
 
