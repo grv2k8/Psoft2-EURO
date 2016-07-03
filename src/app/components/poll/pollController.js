@@ -28,6 +28,7 @@ Controller that handles
         $scope.predictionGridLoaded = true;
 
         $scope.matchDateTime = '';
+        var now = new Date();
 
         // $scope.lockDown = false;
         
@@ -50,8 +51,17 @@ Controller that handles
             else {
                 return false;
             }
-        }
+        };
 
+        $scope.showDateRemaining = function(predLockTime){
+            return (now < predLockTime);
+        };
+
+        $scope.showDaysRemaining = function(predLockTime){
+
+            console.log(new Date(predLockTime).getDay() != now.getDay());
+            return (new Date(predLockTime).getDay() != now.getDay());
+        };
 /*
         var getPredictionTable = function () {
             
