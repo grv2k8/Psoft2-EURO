@@ -136,7 +136,7 @@ Controller that handles
                     $scope.nogames = false;
 
                     $scope.remainingPredictions = response.data.rem_predictions;
-                    console.log(angular.toJson(response.data));
+                    //console.log(angular.toJson(response.data));
 
                     var targetDateMsec = new Date($scope.games[0].date).getTime() -  15*60000;
                     $scope.matchDateTime = (targetDateMsec > 0) ? (new Date($scope.games[0].date).getTime() - 15 * 60000) : '';       //get 15 min prior to match time in msec
