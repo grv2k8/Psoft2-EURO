@@ -30,8 +30,6 @@ Controller that handles
         $scope.matchDateTime = '';
         var now = new Date();
 
-        $scope.remainingPredictions = 0;
-
         // $scope.lockDown = false;
         
         //	$scope.isPointsTableLoaded = false;
@@ -66,7 +64,7 @@ Controller that handles
         };
 
         $scope.getRemainingPlayerCount = function(){
-            return 5;
+            return gameService.getRemainingPredictionCount();
         }
 
 /*
@@ -124,8 +122,7 @@ Controller that handles
                 if (!response.data.success) {
                     throw response.data.message;
                 }
-                
-                
+
                 //console.log(angular.toJson(response.data, true));
                 
                 if (response.data.count == 0) {
@@ -135,8 +132,8 @@ Controller that handles
                     $scope.games = response.data.matchData.slice();		//copy games info to scope
                     $scope.nogames = false;
 
-                    $scope.remainingPredictions = response.data.rem_predictions;
-                    //console.log(angular.toJson(response.data));
+                    //$scope.remainingPredictions = response.data.rem_predictions;
+                    gameService.setRemainingPredictionCount(response.data.rem_predictions);
 
                     var targetDateMsec = new Date($scope.games[0].date).getTime() -  15*60000;
                     $scope.matchDateTime = (targetDateMsec > 0) ? (new Date($scope.games[0].date).getTime() - 15 * 60000) : '';       //get 15 min prior to match time in msec
@@ -198,11 +195,8 @@ Controller that handles
                             throw "There was an error trying to fetch prediction data from the web service. Please try again later";
                         }
                         if (!response.data.success) { throw response.data.message; }
-                        //console.log(angular.toJson(response.data));
 
-                        //$scope.predictionGrid.data = response.data.predictData;
-                        $scope.remainingPredictions = response.data.rem_predictions;
-                        //console.log(angular.toJson(response.data));
+                        gameService.setRemainingPredictionCount(response.data.rem_predictions);
                         gameService.fillPredictionGrid(response.data.predictData);      //for dynamic refreshing of prediction grid
                         $scope.predictionGridLoaded = true;
                     })

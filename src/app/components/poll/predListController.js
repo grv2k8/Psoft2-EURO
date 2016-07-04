@@ -39,13 +39,13 @@ Controller that retrieves prediction list for current match from submitted entri
                     throw "There was an error trying to fetch prediction data from the web service. Please try again later";
                 }
                 if (!response.data.success) { throw response.data.message; }
-                //console.log(angular.toJson(response.data));
+                //console.log(angular.toJson(response.data,true));
 
                 if (response.data.predictData.length == 1) {
                     $scope.lockDown = true;
                 }
-                //$scope.predictionGrid.data = response.data.predictData;
-                gameService.fillPredictionGrid(response.data.predictData);      //for dynamic refreshing of prediction grid
+                gameService.setRemainingPredictionCount(response.data.rem_predictions);
+                gameService.fillPredictionGrid(response.data.predictData);      //for dynamically refreshing the prediction grid
             })
             .catch(function (err) {
                 console.error("Unable to fetch prediction table. Details:\n" + err);

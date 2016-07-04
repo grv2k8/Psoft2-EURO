@@ -87,6 +87,7 @@
                                 <span>Prediction list</span>
                                 <span ng-if="showDateRemaining(matchDateTime)" class="h5">
                                     (Time remaining: <timer end-time='matchDateTime'><span>{{days}} days </span>{{hhours}}:{{mminutes}}:{{sseconds}}</timer>)
+                                    <span class="h5" ng-if="predictionGridLoaded">/ {{getRemainingPlayerCount()}} predictions left </span>
                                 </span>
                             </div>
                             <div ng-hide="predictionGridLoaded"><span class="h5"><img src="/assets/img/loading.gif" /> Refreshing...</span></div>
