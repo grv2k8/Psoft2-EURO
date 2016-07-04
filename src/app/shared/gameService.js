@@ -5,6 +5,9 @@ grjoshi 3/30/2016
 
 angular.module("psoft2UI").service("gameService", function ($http) {
 
+
+    var rem_predictions = 0;
+
     var predictionGrid = {
         enableColumnMenus: false,
         minRowsToShow: 17,
@@ -18,7 +21,13 @@ angular.module("psoft2UI").service("gameService", function ($http) {
             }]
     };
     
+    this.getRemainingPredictionCount = function(){
+        return rem_predictions;
+    };
 
+    this.setRemainingPredictionCount = function(remP){
+        rem_predictions = remP;
+    };
     this.fillPredictionGrid = function(pred_data){
         predictionGrid.data = pred_data;
     };
