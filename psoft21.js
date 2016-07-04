@@ -110,27 +110,36 @@ app.get("/api/getUserPoints", function (req, res) {
 app.get("/api/nextmatch", function (req, res) {
     var resObj = {
         count: 0,
+        rem_predictions: 0,     //remaining predictions for next active match
         matchData: [],
         message: "",
         success: false
     };
     //Using isActive column to determine which matches are to be shown
-    sqlConn.query(
-        "SELECT team1.teamID as t1ID,team1.name as t1Name,team1.group as t1Group, team1.logoURL as t1logoURL, " +
-                "team2.teamID as t2ID,team2.name as t2Name, team2.group as t2Group, team2.logoURL as t2logoURL, " +
-                "match.matchID as matchID, " +
-                "match.isLocked as locked, " +
-                "match.MatchDate as date " +
+
+    var nextGameQRY = "SELECT " +
+            "((SELECT COUNT(*) FROM users) - COUNT(*)) as rem_preds," +
+            "team1.teamID as t1ID,team1.name as t1Name,team1.group as t1Group, team1.logoURL as t1logoURL," +
+            "team2.teamID as t2ID,team2.name as t2Name, team2.group as t2Group, team2.logoURL as t2logoURL, " +
+            "m.matchID as matchID, " +
+            "m.isLocked as locked, " +
+            "m.MatchDate as date " +
         "FROM " +
-            "`match` LEFT JOIN (teams as team1, teams as team2) " +
-                    "ON (team1.teamID = `match`.Team1ID AND team2.teamID = `match`.Team2ID) " +
+            "prediction p, `match` m, teams team1, teams team2 " +
         "WHERE " +
-            "isActive=1",           //todo: use date calculation fu to figure out which is the list of upcoming matches the same day or next day
+            "team1.teamID = m.Team1ID AND " +
+            "team2.teamID = m.Team2ID AND " +
+            "m.matchID = p.matchID AND " +
+            "m.isActive=1;";
+
+    sqlConn.query(
+        nextGameQRY,           //todo: use date calculation fu to figure out which is the list of upcoming matches the same day or next day
         { type: sqlConn.QueryTypes.SELECT })
         .then(function (matches) {
         //fill response object and return
         resObj.success = true;
         resObj.count = matches.length;
+        resObj.rem_predictions = matches[0].rem_preds;
 
         for (var n = 0; n < matches.length; n++) {
 
@@ -146,7 +155,7 @@ app.get("/api/nextmatch", function (req, res) {
                 team2Name: matches[n].t2Name,
                 team2LogoPath: matches[n].t2logoURL,
                 //team2Group: matches[n].t2Group,
-                locked: (matches[n].locked == 0)?false:true,        //this will enable/disable prediction for particular match
+                locked: (matches[n].locked != 0),        //this will enable/disable prediction for particular match
                 date: matches[n].date
             });
         }
