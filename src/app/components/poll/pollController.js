@@ -30,6 +30,8 @@ Controller that handles
         $scope.matchDateTime = '';
         var now = new Date();
 
+        $scope.remainingPredictions = 0;
+
         // $scope.lockDown = false;
         
         //	$scope.isPointsTableLoaded = false;
@@ -59,9 +61,14 @@ Controller that handles
 
         $scope.showDaysRemaining = function(predLockTime){
 
-            console.log(new Date(predLockTime).getDay() != now.getDay());
+            //console.log(new Date(predLockTime).getDay() != now.getDay());
             return (new Date(predLockTime).getDay() != now.getDay());
         };
+
+        $scope.getRemainingPlayerCount = function(){
+            return 5;
+        }
+
 /*
         var getPredictionTable = function () {
             
@@ -128,10 +135,11 @@ Controller that handles
                     $scope.games = response.data.matchData.slice();		//copy games info to scope
                     $scope.nogames = false;
 
+                    $scope.remainingPredictions = response.data.rem_predictions;
+                    console.log(angular.toJson(response.data));
+
                     var targetDateMsec = new Date($scope.games[0].date).getTime() -  15*60000;
-
                     $scope.matchDateTime = (targetDateMsec > 0) ? (new Date($scope.games[0].date).getTime() - 15 * 60000) : '';       //get 15 min prior to match time in msec
-
                 }
                 return;
             })
@@ -193,6 +201,8 @@ Controller that handles
                         //console.log(angular.toJson(response.data));
 
                         //$scope.predictionGrid.data = response.data.predictData;
+                        $scope.remainingPredictions = response.data.rem_predictions;
+                        //console.log(angular.toJson(response.data));
                         gameService.fillPredictionGrid(response.data.predictData);      //for dynamic refreshing of prediction grid
                         $scope.predictionGridLoaded = true;
                     })
