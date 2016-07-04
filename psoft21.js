@@ -158,7 +158,7 @@ app.get("/api/nextmatch", function (req, res) {
             sqlConn.query(getRemPredsQRY,
                 {type: sqlConn.QueryTypes.SELECT})
                 .then(function (remPredictions) {
-                    console.log(JSON.stringify(remPredictions,true));
+                    //console.log(JSON.stringify(remPredictions,true));
                     resObj.rem_predictions = remPredictions[0].rem_preds;
                     resObj.success = true;
                     res.json(resObj);
@@ -232,10 +232,9 @@ app.get("/api/getPredictions", function (req, res) {
                     sqlConn.query(getRemPredsQRY,
                         {type: sqlConn.QueryTypes.SELECT})
                         .then(function (remPredictions) {
-                            console.log(JSON.stringify(remPredictions,true));
+                            //console.log(JSON.stringify(remPredictions,true));
                             resObj.rem_predictions = remPredictions[0].rem_preds;
                             resObj.success = true;
-                            console.log(JSON.stringify(resObj,true));
                             res.json(resObj);
                             res.end();
                         })
